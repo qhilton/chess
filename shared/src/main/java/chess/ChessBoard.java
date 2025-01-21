@@ -72,22 +72,24 @@ public class ChessBoard {
 //        addPiece(tempPosition, tempPiece);
     }
 
-    @Override
-    public String toString() {
-        String stringBoard = "";
-        for (int x = 7; x >= 0; x--) {
-            stringBoard += "|";
-            for (int y = 0; y < 8; y++) {
-                if (chessPieces[x][y] != null) {
-                    stringBoard += chessPieces[x][y].toString() + "|";
-                } else {
-                    stringBoard += " |";
-                }
-            }
-            stringBoard += "\n";
-        }
-        return stringBoard;
-    }
+//    @Override
+//    public String toString() {
+//        String stringBoard = "";
+//        for (int x = 7; x >= 0; x--) {
+//            stringBoard += "|";
+//            for (int y = 0; y < 8; y++) {
+//                if (chessPieces[x][y] != null) {
+//                    stringBoard += chessPieces[x][y].toString() + "|";
+//                } else {
+//                    stringBoard += " |";
+//                }
+//            }
+//            if (x != 0) {
+//                stringBoard += "\n";
+//            }
+//        }
+//        return stringBoard;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -98,7 +100,7 @@ public class ChessBoard {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        return Arrays.equals(chessPieces, that.chessPieces);
+        return Arrays.deepEquals(chessPieces, that.chessPieces);
     }
 
     @Override

@@ -48,6 +48,26 @@ public class KingMovesCalculator implements PieceMovesCalculator {
         return moves;
     }
 
+    @Override
+    public Collection<ChessMove> calculateQueenMoves(ChessBoard board, ChessPosition myPosition) {
+        return moves;
+    }
+
+    @Override
+    public Collection<ChessMove> calculateRookMoves(ChessBoard board, ChessPosition myPosition) {
+        return moves;
+    }
+
+    @Override
+    public Collection<ChessMove> calculateBishopMoves(ChessBoard board, ChessPosition myPosition) {
+        return moves;
+    }
+
+    @Override
+    public Collection<ChessMove> calculatePawnMoves(ChessBoard board, ChessPosition myPosition) {
+        return moves;
+    }
+
     private void addMove(ChessBoard board, ChessPosition myPosition, ChessPosition tempPosition) {
         if ((board.getPiece(tempPosition) == null) || (board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor())) {
             moves.add(new ChessMove(myPosition, tempPosition, null));

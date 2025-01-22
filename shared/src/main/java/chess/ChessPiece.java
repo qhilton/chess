@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -54,8 +53,11 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch (type) {
             case KING:
-                PieceMovesCalculator kingCalcuator = new KingMovesCalculator();
-                return kingCalcuator.calculateKingMoves(board, myPosition);
+                PieceMovesCalculator kingCalculator = new KingMovesCalculator();
+                return kingCalculator.calculateKingMoves(board, myPosition);
+            case KNIGHT:
+                PieceMovesCalculator knightCalculator = new KnightMovesCalculator();
+                return knightCalculator.calculateKnightMoves(board, myPosition);
         }
         return null;
     }

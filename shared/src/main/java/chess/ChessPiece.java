@@ -53,22 +53,22 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch (type) {
             case KING:
-                PieceMovesCalculator kingCalculator = new KingMovesCalculator();
+                chess.PieceMovesCalculator kingCalculator = new chess.KingMovesCalculator();
                 return kingCalculator.calculateKingMoves(board, myPosition);
             case QUEEN:
-                PieceMovesCalculator queenCalculator = new QueenMovesCalculator();
+                chess.PieceMovesCalculator queenCalculator = new chess.QueenMovesCalculator();
                 return queenCalculator.calculateQueenMoves(board, myPosition);
             case BISHOP:
-                PieceMovesCalculator bishopCalculator = new BishopMovesCalculator();
+                chess.PieceMovesCalculator bishopCalculator = new chess.BishopMovesCalculator();
                 return bishopCalculator.calculateBishopMoves(board, myPosition);
             case KNIGHT:
-                PieceMovesCalculator knightCalculator = new KnightMovesCalculator();
+                chess.PieceMovesCalculator knightCalculator = new chess.KnightMovesCalculator();
                 return knightCalculator.calculateKnightMoves(board, myPosition);
             case ROOK:
-                PieceMovesCalculator rookCalculator = new RookMovesCalculator();
+                chess.PieceMovesCalculator rookCalculator = new chess.RookMovesCalculator();
                 return rookCalculator.calculateRookMoves(board, myPosition);
             case PAWN:
-                PieceMovesCalculator pawnCalculator = new PawnMovesCalculator();
+                chess.PieceMovesCalculator pawnCalculator = new chess.PawnMovesCalculator();
                 return pawnCalculator.calculatePawnMoves(board, myPosition);
         }
         return null;

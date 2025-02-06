@@ -64,12 +64,6 @@ public class ChessBoard {
         for (int i = 1; i <= 8; i++) {
             addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
-
-//        ChessPosition tempPosition = new ChessPosition(1,1);
-//        ChessGame.TeamColor tempColor = ChessGame.TeamColor.WHITE;
-//        ChessPiece.PieceType tempType = ChessPiece.PieceType.ROOK;
-//        ChessPiece tempPiece = new ChessPiece(tempColor, tempType);
-//        addPiece(tempPosition, tempPiece);
     }
 
 //    @Override

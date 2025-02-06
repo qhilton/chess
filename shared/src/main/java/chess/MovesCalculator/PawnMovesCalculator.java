@@ -5,91 +5,140 @@ import java.util.Collection;
 
 public class PawnMovesCalculator implements PieceMovesCalculator {
     private ArrayList<ChessMove> moves = new ArrayList<>();
-    private boolean inBounds = true;
 
-    @Override
     public Collection<ChessMove> calculatePawnMoves(ChessBoard board, ChessPosition myPosition) {
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
-            if (myPosition.getRow() == 2 && board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn())) == null) { //start position
+            if (myPosition.getRow() == 2 && board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn())) == null) {
                 ChessPosition tempPosition = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
                 addMove(board, myPosition, tempPosition, null);
             }
-            if (myPosition.getRow() + 1 <= 8) { //advance
-                ChessPosition tempPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
-                if (tempPosition.getRow() != 8) { //normal move
-                    addMove(board, myPosition, tempPosition, null);
-                } else { //promotion
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
-                }
-                if (myPosition.getColumn() + 1 <= 8) { //capture right
-                    tempPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
-                    if (tempPosition.getRow() != 8) { //normal capture
-                        captureMove(board, myPosition, tempPosition, null);
-                    } else { //promotion
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
-                    }
-                }
-                if (myPosition.getColumn() - 1 > 0) { //capture left
-                    tempPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
-                    if (tempPosition.getRow() != 8) { //normal capture
-                        captureMove(board, myPosition, tempPosition, null);
-                    } else { //promotion
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
-                    }
-                }
+            if (myPosition.getRow()+1 < 8) {
+                ChessPosition tempPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
+                addMove(board, myPosition, tempPosition, null);
+                capture(board, myPosition, tempPosition, null);
+            }
+            else if (myPosition.getRow()+1 == 8) {
+                ChessPosition tempPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
             }
         }
+
         else if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-            if (myPosition.getRow() == 7 && board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn())) == null) { //start position
+            if (myPosition.getRow() == 7 && board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn())) == null) {
                 ChessPosition tempPosition = new ChessPosition(myPosition.getRow()-2, myPosition.getColumn());
                 addMove(board, myPosition, tempPosition, null);
             }
-            if (myPosition.getRow() - 1 > 0) { //advance
-                ChessPosition tempPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
-                if (tempPosition.getRow() != 1) { //normal move
-                    addMove(board, myPosition, tempPosition, null);
-                } else { //promotion
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
-                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
-                }
-                if (myPosition.getColumn() + 1 <= 8) { //capture right
-                    tempPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
-                    if (tempPosition.getRow() > 1) { //normal capture
-                        captureMove(board, myPosition, tempPosition, null);
-                    } else { //promotion
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
-                    }
-                }
-                if (myPosition.getColumn() - 1 > 0) { //capture left
-                    tempPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
-                    if (tempPosition.getRow() > 1) { //normal capture
-                        captureMove(board, myPosition, tempPosition, null);
-                    } else { //promotion
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
-                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
-                    }
-                }
+            if (myPosition.getRow()-1 > 1) {
+                ChessPosition tempPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
+                addMove(board, myPosition, tempPosition, null);
+                capture(board, myPosition, tempPosition, null);
+            }
+            else if (myPosition.getRow()-1 == 1) {
+                ChessPosition tempPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+                addMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+                capture(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
             }
         }
 
         return moves;
     }
+
+//    @Override
+//    public Collection<ChessMove> calculatePawnMoves(ChessBoard board, ChessPosition myPosition) {
+//        if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+//            if (myPosition.getRow() == 2 && board.getPiece(new ChessPosition(myPosition.getRow()+1, myPosition.getColumn())) == null) { //start position
+//                ChessPosition tempPosition = new ChessPosition(myPosition.getRow()+2, myPosition.getColumn());
+//                addMove(board, myPosition, tempPosition, null);
+//            }
+//            if (myPosition.getRow() + 1 <= 8) { //advance
+//                ChessPosition tempPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
+//                if (tempPosition.getRow() != 8) { //normal move
+//                    addMove(board, myPosition, tempPosition, null);
+//                } else { //promotion
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+//                }
+//                if (myPosition.getColumn() + 1 <= 8) { //capture right
+//                    tempPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+//                    if (tempPosition.getRow() != 8) { //normal capture
+//                        captureMove(board, myPosition, tempPosition, null);
+//                    } else { //promotion
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+//                    }
+//                }
+//                if (myPosition.getColumn() - 1 > 0) { //capture left
+//                    tempPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
+//                    if (tempPosition.getRow() != 8) { //normal capture
+//                        captureMove(board, myPosition, tempPosition, null);
+//                    } else { //promotion
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+//                    }
+//                }
+//            }
+//        }
+//        else if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+//            if (myPosition.getRow() == 7 && board.getPiece(new ChessPosition(myPosition.getRow()-1, myPosition.getColumn())) == null) { //start position
+//                ChessPosition tempPosition = new ChessPosition(myPosition.getRow()-2, myPosition.getColumn());
+//                addMove(board, myPosition, tempPosition, null);
+//            }
+//            if (myPosition.getRow() - 1 > 0) { //advance
+//                ChessPosition tempPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
+//                if (tempPosition.getRow() != 1) { //normal move
+//                    addMove(board, myPosition, tempPosition, null);
+//                } else { //promotion
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+//                    addMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+//                }
+//                if (myPosition.getColumn() + 1 <= 8) { //capture right
+//                    tempPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
+//                    if (tempPosition.getRow() > 1) { //normal capture
+//                        captureMove(board, myPosition, tempPosition, null);
+//                    } else { //promotion
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+//                    }
+//                }
+//                if (myPosition.getColumn() - 1 > 0) { //capture left
+//                    tempPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
+//                    if (tempPosition.getRow() > 1) { //normal capture
+//                        captureMove(board, myPosition, tempPosition, null);
+//                    } else { //promotion
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+//                        captureMove(board, myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return moves;
+//    }
 
     @Override
     public Collection<ChessMove> calculateKingMoves(ChessBoard board, ChessPosition myPosition) {return moves;}
@@ -102,29 +151,50 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> calculateBishopMoves(ChessBoard board, ChessPosition myPosition) {return moves;}
 
-    private void addMove(ChessBoard board, ChessPosition myPosition, ChessPosition tempPosition, ChessPiece.PieceType promo) {
-        if (board.getPiece(tempPosition) == null) {
+//    private void addMove(ChessBoard board, ChessPosition myPosition, ChessPosition tempPosition, ChessPiece.PieceType promo) {
+//        if (board.getPiece(tempPosition) == null) {
+//            moves.add(new ChessMove(myPosition, tempPosition, promo));
+//        }
+////        else if (board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+////            moves.add(new ChessMove(myPosition, tempPosition, null));
+////            inBounds = false;
+////        }
+////        else if (board.getPiece(tempPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+////            inBounds = false;
+////        }
+//    }
+//
+//    private void captureMove(ChessBoard board, ChessPosition myPosition, ChessPosition tempPosition, ChessPiece.PieceType promo) {
+//        if (board.getPiece(tempPosition) != null) {
+//            if (board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+//                moves.add(new ChessMove(myPosition, tempPosition, promo));
+//                //inBounds = false;
+//            }
+//        }
+////        else if (board.getPiece(tempPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+////            inBounds = false;
+////        }
+//    }
+
+    public void addMove(ChessBoard board, ChessPosition myPosition, ChessPosition tempPosition, ChessPiece.PieceType promo) {
+        if(board.getPiece(tempPosition) == null) {
             moves.add(new ChessMove(myPosition, tempPosition, promo));
         }
-//        else if (board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-//            moves.add(new ChessMove(myPosition, tempPosition, null));
-//            inBounds = false;
-//        }
-//        else if (board.getPiece(tempPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
-//            inBounds = false;
-//        }
     }
 
-    private void captureMove(ChessBoard board, ChessPosition myPosition, ChessPosition tempPosition, ChessPiece.PieceType promo) {
-        if (board.getPiece(tempPosition) != null) {
-            if (board.getPiece(tempPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                moves.add(new ChessMove(myPosition, tempPosition, promo));
-                //inBounds = false;
+    public void capture(ChessBoard board, ChessPosition myPosition, ChessPosition tempPosition, ChessPiece.PieceType promo) {
+        if(tempPosition.getColumn()-1 > 0){
+            ChessPosition temp = new ChessPosition(tempPosition.getRow(), tempPosition.getColumn()-1);
+            if(board.getPiece(temp) != null && board.getPiece(temp).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                moves.add(new ChessMove(myPosition, temp, promo));
             }
         }
-//        else if (board.getPiece(tempPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
-//            inBounds = false;
-//        }
+        if(tempPosition.getColumn()+1 <= 8){
+            ChessPosition temp = new ChessPosition(tempPosition.getRow(), tempPosition.getColumn()+1);
+            if(board.getPiece(temp) != null && board.getPiece(temp).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                moves.add(new ChessMove(myPosition, temp, promo));
+            }
+        }
     }
 
 }

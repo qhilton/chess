@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -75,7 +76,25 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = findKing(teamColor);
+
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition myPosition = new ChessPosition(i, j);
+                ChessPiece currentPiece = board.getPiece(myPosition);
+
+                if (currentPiece != null) {
+                    ArrayList<ChessMove> currentMoves = (ArrayList<ChessMove>) currentPiece.pieceMoves(board, myPosition);
+                    for (ChessMove move : currentMoves) {
+                        if (move.getEndPosition() == kingPosition) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -121,8 +140,10 @@ public class ChessGame {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition myPosition = new ChessPosition(i, j);
-                if (board.getPiece(myPosition).equals(ChessPiece.PieceType.KING) && board.getPiece(myPosition).getTeamColor() == color) {
-                    return myPosition;
+                if (board.getPiece(myPosition) != null) {
+                    if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(myPosition).getTeamColor() == color) {
+                        return myPosition;
+                    }
                 }
             }
         }

@@ -86,7 +86,7 @@ public class ChessGame {
                 if (currentPiece != null) {
                     ArrayList<ChessMove> currentMoves = (ArrayList<ChessMove>) currentPiece.pieceMoves(board, myPosition);
                     for (ChessMove move : currentMoves) {
-                        if (move.getEndPosition() == kingPosition) {
+                        if (move.getEndPosition().equals(kingPosition)) {
                             return true;
                         }
                     }

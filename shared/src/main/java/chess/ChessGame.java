@@ -57,15 +57,6 @@ public class ChessGame implements Cloneable {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessPiece.PieceType type = board.getPiece(startPosition).getPieceType();
-////        Boolean inCheck = isInCheck(board.getPiece(startPosition).getTeamColor());
-//        switch (type) {
-//            case KING:
-//                MovementRule kingMoves = new KingMovementRule();
-//                return kingMoves.validKingMoves(board, startPosition);
-//        }
-//
-//        throw new RuntimeException("Not implemented");
         ArrayList<ChessMove> moves = new ArrayList<>();
         ChessPiece currentPiece = new ChessPiece(board.getPiece(startPosition).getTeamColor(), board.getPiece(startPosition).getPieceType());
         ArrayList<ChessMove> potentialMoves = (ArrayList<ChessMove>) currentPiece.pieceMoves(board, startPosition);
@@ -131,7 +122,25 @@ public class ChessGame implements Cloneable {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        ArrayList<ChessMove> moves = new ArrayList<>();
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition myPosition = new ChessPosition(i, j);
+                ChessPiece currentPiece = board.getPiece(myPosition);
+
+                if (currentPiece != null && currentPiece.getTeamColor() == teamColor) {
+                    ArrayList<ChessMove> currentMoves = (ArrayList<ChessMove>) validMoves(myPosition);
+                    if (!currentMoves.isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -58,14 +58,32 @@ public class ChessGame implements Cloneable {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece.PieceType type = board.getPiece(startPosition).getPieceType();
-//        Boolean inCheck = isInCheck(board.getPiece(startPosition).getTeamColor());
-        switch (type) {
-            case KING:
-                MovementRule kingMoves = new KingMovementRule();
-                return kingMoves.validKingMoves(board, startPosition);
+////        Boolean inCheck = isInCheck(board.getPiece(startPosition).getTeamColor());
+//        switch (type) {
+//            case KING:
+//                MovementRule kingMoves = new KingMovementRule();
+//                return kingMoves.validKingMoves(board, startPosition);
+//        }
+//
+//        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> moves = new ArrayList<>();
+        ChessPiece currentPiece = new ChessPiece(board.getPiece(startPosition).getTeamColor(), board.getPiece(startPosition).getPieceType());
+        ArrayList<ChessMove> potentialMoves = (ArrayList<ChessMove>) currentPiece.pieceMoves(board, startPosition);
+        ChessGame game = new ChessGame();
+
+        for (ChessMove move : potentialMoves) {
+            game.setBoard(board);
+            game = game.clone();
+            ChessBoard tempBoard = game.getBoard();
+            tempBoard.addPiece(move.getEndPosition(), currentPiece);
+            tempBoard.addPiece(move.getStartPosition(), null);
+
+            if (!game.isInCheck(currentPiece.getTeamColor())) {
+                moves.add(move);
+            }
         }
 
-        throw new RuntimeException("Not implemented");
+        return moves;
     }
 
     /**

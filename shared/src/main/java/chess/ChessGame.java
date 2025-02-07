@@ -10,12 +10,13 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable {
     private int turnTracker;
     private ChessBoard board;
     public ChessGame() {
         turnTracker = 0;
         board = new ChessBoard();
+        board.resetBoard();
     }
 
     /**
@@ -56,6 +57,14 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        ChessPiece.PieceType type = board.getPiece(startPosition).getPieceType();
+//        Boolean inCheck = isInCheck(board.getPiece(startPosition).getTeamColor());
+        switch (type) {
+            case KING:
+                MovementRule kingMoves = new KingMovementRule();
+                return kingMoves.validKingMoves(board, startPosition);
+        }
+
         throw new RuntimeException("Not implemented");
     }
 
@@ -151,6 +160,19 @@ public class ChessGame {
     }
 
     @Override
+    public ChessGame clone() {
+        try {
+            ChessGame myClone = (ChessGame) super.clone();
+            //int clonedTurnTracker = (int) getTeamTurn().clone();
+            ChessBoard clonedChessBoard = (ChessBoard) getBoard().clone();
+            myClone.setBoard(clonedChessBoard);
+            return myClone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -159,7 +181,7 @@ public class ChessGame {
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-        return turnTracker == chessGame.turnTracker && Objects.equals(board, chessGame.board);
+        return turnTracker == chessGame.turnTracker && Objects.deepEquals(board, chessGame.board);
     }
 
     @Override

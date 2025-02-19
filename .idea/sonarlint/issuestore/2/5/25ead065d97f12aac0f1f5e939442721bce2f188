@@ -1,12 +1,5 @@
 
-E
-java:S1066x"/Merge this if statement with the enclosing one.(âÄ“º
 µ
 java:S1598"žThis file "PawnMovesCalculator.java" should be located in "chess" directory, not in "C:\Users\Quintin\CS240\chess\shared\src\main\java\chess\MovesCalculator".(í›Íó
-h
-java:S3776"RRefactor this method to reduce its Cognitive Complexity from 52 to the 15 allowed.(îÀ¿Š
-Q	java:S125m"<This block of commented-out lines of code should be removed.(ßÿˆ¹
-P	java:S125z"<This block of commented-out lines of code should be removed.(¢…ƒ
-V	java:S125}"<This block of commented-out lines of code should be removed.(ÑÂžøÿÿÿÿÿ
-G
-java:S1068",Remove this unused "inBounds" private field.(ÒŠº§üÿÿÿÿ
+]	java:S125<"<This block of commented-out lines of code should be removed.(¸Ëù½þÿÿÿÿ8¸Ì–üÌ2
+^	java:S125š"<This block of commented-out lines of code should be removed.(¤ï„ÿÿÿÿÿ8âî”üÌ2

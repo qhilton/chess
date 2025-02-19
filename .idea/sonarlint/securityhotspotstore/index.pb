@@ -43,3 +43,11 @@ m
 =shared/src/test/java/passoff/chess/piece/BishopMoveTests.java,3\0\30378d697b641130153ece6a5b8fa7c1b9b6adf4
 d
 4shared/src/main/java/chess/PieceMovesCalculator.java,8\6\86445dd29f479c1c12adb292aa9650c09ed77fad
+i
+9shared/src/test/java/passoff/chess/game/FullGameTest.java,3\0\304a628b79462cebf64407482375f8e693e3f5cc
+l
+<shared/src/test/java/passoff/chess/game/ValidMovesTests.java,f\f\ffd727fc5e9fd2b43cbe3581e669a4c1ed406a80
+j
+:shared/src/test/java/passoff/chess/game/MakeMoveTests.java,9\1\9175234a3f303bad2cdae147fbe2e704f0f9016d
+l
+<shared/src/test/java/passoff/chess/game/GameStatusTests.java,3\d\3d8e6e324b6bb763d5d4a1a3f28e088c47790aa0

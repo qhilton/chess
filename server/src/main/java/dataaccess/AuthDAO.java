@@ -2,19 +2,25 @@ package dataaccess;
 
 import model.AuthData;
 
+import java.util.Map;
+
 public class AuthDAO implements DataAccess {
-    AuthData authData;
+    Map<String, AuthData> allAuths;
 
     public void createAuth(String authToken, String username) {
-        authData = new AuthData(authToken, username);
+        allAuths.put(authToken, new AuthData(authToken, username));
+    }
+
+    public AuthData getAuth(String authToken) {
+        return allAuths.get(authToken);
+    }
+
+    public void deleteAuth(String authToken) {
+        allAuths.remove(authToken);
     }
 
     @Override
     public void clear() {
-        authData = null;
-    }
-
-    public AuthData getAuth() {
-        return authData;
+        allAuths = null;
     }
 }

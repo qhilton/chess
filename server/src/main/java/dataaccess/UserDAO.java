@@ -1,28 +1,21 @@
 package dataaccess;
 
-import model.GameData;
 import model.UserData;
+import java.util.Map;
 
 public class UserDAO implements DataAccess {
-    UserData userData;
+    Map<String, UserData> allUsers;
 
-    //@Override
     public void createUser(String username, String password, String email) {
-        userData = new UserData(username, password, email);
+        allUsers.put(username, new UserData(username, password, email));
+    }
+
+    public UserData getUser(String username) {
+        return allUsers.get(username);
     }
 
     @Override
     public void clear() {
-        userData = null;
-    }
-
-    //@Override
-    public UserData getUser() {
-        return userData;
-    }
-
-    //@Override
-    public GameData getGame() {
-        return null;
+        allUsers = null;
     }
 }

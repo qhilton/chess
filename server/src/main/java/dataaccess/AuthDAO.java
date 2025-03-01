@@ -2,13 +2,18 @@ package dataaccess;
 
 import model.AuthData;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class AuthDAO implements DataAccess {
     Map<String, AuthData> allAuths;
 
-    public void createAuth(String authToken, String username) {
-        allAuths.put(authToken, new AuthData(authToken, username));
+    public AuthDAO() {
+        allAuths = new HashMap<>();
+    }
+
+    public void createAuth(AuthData authData) {
+        allAuths.put(authData.authToken(), authData);
     }
 
     public AuthData getAuth(String authToken) {

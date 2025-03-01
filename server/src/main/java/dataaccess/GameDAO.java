@@ -3,13 +3,18 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class GameDAO implements DataAccess {
     Map<Integer, GameData> allGames;
 
-    public void createGame(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
-        allGames.put(gameID, new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+    public GameDAO() {
+        allGames = new HashMap<>();
+    }
+
+    public void createGame(GameData gameData) {
+        allGames.put(gameData.gameID(), gameData);
     }
 
     public GameData getGame(int gameID) {

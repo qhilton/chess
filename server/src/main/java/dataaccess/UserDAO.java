@@ -1,13 +1,23 @@
 package dataaccess;
 
 import model.UserData;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class UserDAO implements DataAccess {
     Map<String, UserData> allUsers;
 
-    public void createUser(String username, String password, String email) {
-        allUsers.put(username, new UserData(username, password, email));
+    public UserDAO() {
+        allUsers = new HashMap<>();
+    }
+
+    public void createUser(UserData userData) {
+//        if (allUsers.containsKey(username)) {
+//            throw new DataAccessException("User already exists with the username: ");
+//        }
+
+        allUsers.put(userData.username(), userData);
     }
 
     public UserData getUser(String username) {

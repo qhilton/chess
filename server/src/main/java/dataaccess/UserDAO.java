@@ -12,15 +12,19 @@ public class UserDAO implements DataAccess {
         allUsers = new HashMap<>();
     }
 
-    public void createUser(UserData userData) {
-//        if (allUsers.containsKey(username)) {
-//            throw new DataAccessException("User already exists with the username: ");
-//        }
+    public void createUser(UserData userData) throws DataAccessException {
+        if (allUsers.containsKey(userData.username())) {
+            throw new DataAccessException("User already exists with the username: ");
+        }
 
         allUsers.put(userData.username(), userData);
     }
 
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException{
+        UserData x = allUsers.get(username);
+        if (allUsers.get(username) != null) {
+            throw new DataAccessException("User already exists: " + username);
+        }
         return allUsers.get(username);
     }
 

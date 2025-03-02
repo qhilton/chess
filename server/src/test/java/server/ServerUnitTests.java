@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
 import result.RegisterResult;
@@ -16,5 +17,18 @@ public class ServerUnitTests {
 
         assertEquals("myUserName", result.username());
         assertNotNull(result.authToken());
+    }
+
+    @Test
+    public void registerNegativeTest() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("myUserName", "myPassword", "myEmail");
+        UserService userService = new UserService();
+        userService.register(request);
+
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            userService.register(request);
+        });
+//
+//        assertEquals("User already exists: myUserName", exception.getMessage());
     }
 }

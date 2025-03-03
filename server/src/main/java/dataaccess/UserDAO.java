@@ -21,7 +21,6 @@ public class UserDAO implements DataAccess {
     }
 
     public UserData getUser(String username) throws DataAccessException{
-        UserData x = allUsers.get(username);
         if (allUsers.get(username) == null) {
             throw new DataAccessException("User not found: " + username);
         }
@@ -33,11 +32,7 @@ public class UserDAO implements DataAccess {
     }
 
     public Boolean unauthorizedUser(String username, String password) {
-        String x = allUsers.get(username).password();
-        if (!allUsers.get(username).password().equals(password) || !allUsers.containsKey(username)) {
-            return true;
-        }
-        return false;
+        return (!allUsers.containsKey(username) || !allUsers.get(username).password().equals(password));
     }
 
     @Override

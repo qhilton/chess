@@ -47,6 +47,22 @@ public class UserService {
         return auth;
     }
 
-    //public LoginResult login(LoginRequest loginRequest) {}
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        String username = loginRequest.username();
+        String password = loginRequest.password();
+        if (username == null || password == null) {
+            throw new DataAccessException("Bad request");
+        }
+        else if (user.unauthorizedUser(username, password)) {
+            throw new DataAccessException("Unauthorized login request");
+        }
+
+        String authToken = UUID.randomUUID().toString();
+        auth.createAuth(new AuthData(authToken, username));
+        return new LoginResult(username, authToken);
+    }
+
+
+
     //public void logout(LogoutRequest logoutRequest) {}
 }

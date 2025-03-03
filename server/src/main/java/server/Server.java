@@ -16,6 +16,8 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::register);
         Spark.delete("/db", this::clear);
+        Spark.post("/session", this::login);
+
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -41,6 +43,22 @@ public class Server {
             else if (e.getMessage().contains("User already exists")) {
                 res.status(403);
                 return "{ \"message\": \"Error: already taken\" }";
+            }
+
+            res.status(500);
+            return "{ \"message\": \"Error:\" }";
+        }
+    }
+
+    private Object login(Request req, Response res) {
+        try {
+            var loginUser = userHandler.handleLogin(req.body());
+            res.status(200);
+            return loginUser;
+        } catch (Exception e) {
+            if (e.getMessage().contains("Unauthorized")) {
+                res.status(401);
+                return "{ \"message\": \"Error: unauthorized\" }";
             }
 
             res.status(500);

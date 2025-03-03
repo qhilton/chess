@@ -32,6 +32,14 @@ public class UserDAO implements DataAccess {
         return allUsers;
     }
 
+    public Boolean unauthorizedUser(String username, String password) {
+        String x = allUsers.get(username).password();
+        if (!allUsers.get(username).password().equals(password) || !allUsers.containsKey(username)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void clear() {
         allUsers.clear();

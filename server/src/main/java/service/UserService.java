@@ -18,6 +18,10 @@ public class UserService {
     AuthDAO auth = new AuthDAO();
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
+            throw new DataAccessException("Bad request");
+        }
+
         String authToken = UUID.randomUUID().toString();
         try {
             user.getUser(registerRequest.username());

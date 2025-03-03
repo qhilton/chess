@@ -6,12 +6,17 @@ import result.RegisterResult;
 import service.UserService;
 
 public class UserHandler {
+    UserService userService = new UserService();
+
     public String handleRegister(String json) throws Exception {
         Gson serializer = new Gson();
         RegisterRequest registerRequest = serializer.fromJson(json, RegisterRequest.class);
-        UserService userService = new UserService();
         RegisterResult registerResult = userService.register(registerRequest);
         return serializer.toJson(registerResult);
+    }
+
+    public void clear() {
+        userService.clear();
     }
 
 

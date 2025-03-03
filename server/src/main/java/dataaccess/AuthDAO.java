@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import model.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +25,12 @@ public class AuthDAO implements DataAccess {
         allAuths.remove(authToken);
     }
 
+    public Map getAllAuths() {
+        return allAuths;
+    }
+
     @Override
     public void clear() {
-        allAuths = null;
+        allAuths.clear();
     }
 }

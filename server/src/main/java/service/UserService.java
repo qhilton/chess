@@ -21,14 +21,26 @@ public class UserService {
         String authToken = UUID.randomUUID().toString();
         try {
             user.getUser(registerRequest.username());
+        } catch (DataAccessException e) {
             user.createUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
             auth.createAuth(new AuthData(authToken, registerRequest.username()));
             return new RegisterResult(registerRequest.username(), authToken);
-        } catch (DataAccessException e) {
-            throw new DataAccessException("User already exists: " + registerRequest.username());
-
         }
+        throw new DataAccessException("User already exists: " + registerRequest.username());
 
+    }
+
+    public void clear() {
+        user.clear();
+        auth.clear();
+    }
+
+    public UserDAO getUserDAO() {
+        return user;
+    }
+
+    public AuthDAO getAuthDAO() {
+        return auth;
     }
 
     //public LoginResult login(LoginRequest loginRequest) {}

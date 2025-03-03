@@ -32,6 +32,6 @@ public class GameDAO implements DataAccess {
 
     @Override
     public void clear() {
-        allGames = null;
+        allGames.clear();
     }
 }

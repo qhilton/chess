@@ -22,14 +22,18 @@ public class UserDAO implements DataAccess {
 
     public UserData getUser(String username) throws DataAccessException{
         UserData x = allUsers.get(username);
-        if (allUsers.get(username) != null) {
-            throw new DataAccessException("User already exists: " + username);
+        if (allUsers.get(username) == null) {
+            throw new DataAccessException("User not found: " + username);
         }
         return allUsers.get(username);
     }
 
+    public Map<String, UserData> getAllUsers() {
+        return allUsers;
+    }
+
     @Override
     public void clear() {
-        allUsers = null;
+        allUsers.clear();
     }
 }

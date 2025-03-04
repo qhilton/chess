@@ -35,12 +35,6 @@ public class UserDAO implements DataAccess {
         return (!allUsers.containsKey(username) || !allUsers.get(username).password().equals(password));
     }
 
-    //public
-
-    public Boolean containsAuthToken(String authToken) {
-        return allUsers.values().contains(authToken);
-    }
-
     @Override
     public void clear() {
         allUsers.clear();

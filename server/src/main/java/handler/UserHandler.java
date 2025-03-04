@@ -3,10 +3,8 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import request.LoginRequest;
-import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
-import result.LogoutResult;
 import result.RegisterResult;
 import service.UserService;
 

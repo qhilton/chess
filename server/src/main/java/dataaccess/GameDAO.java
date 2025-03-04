@@ -5,7 +5,6 @@ import model.GameData;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class GameDAO implements DataAccess {
     Map<Integer, GameData> allGames;
@@ -33,7 +32,6 @@ public class GameDAO implements DataAccess {
     }
 
     public void updateGame(int gameID, GameData gameData) {
-        //GameData gameData = allGames.get(gameID);
         allGames.put(gameID, gameData);
     }
 

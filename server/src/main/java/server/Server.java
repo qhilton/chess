@@ -7,7 +7,6 @@ import spark.*;
 public class Server {
     UserHandler userHandler = new UserHandler();
     GameHandler gameHandler = new GameHandler();
-    UserHandler authHandler = new UserHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -149,7 +148,6 @@ public class Server {
     private Object clear(Request req, Response res) {try {
             userHandler.clear();
             gameHandler.clear();
-            //authHandler.clear();
             res.status(200);
             return "";
         } catch (Exception e) {

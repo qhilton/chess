@@ -64,7 +64,7 @@ public class GameService {
             }
             whiteUserName = username;
         }
-        else if (joinGameRequest.playerColor().equals("BLACK")) {
+        else {
             if (blackUserName != null && !currentGame.blackUsername().equals(username)) {
                 throw new DataAccessException("Color already taken");
             }
@@ -73,14 +73,6 @@ public class GameService {
 
         GameData newGame = new GameData(joinGameRequest.gameID(), whiteUserName, blackUserName, currentGame.gameName(), currentGame.game());
         game.updateGame(joinGameRequest.gameID(), newGame);
-
-//        try {
-//            GameData newGame = new GameData(joinGameRequest.gameID(), whiteUserName, blackUserName, currentGame.gameName(), currentGame.game());
-//            game.updateGame(joinGameRequest.gameID(), newGame);
-//        }
-//        catch (DataAccessException e) {
-//            throw new DataAccessException("Unauthorized create request");
-//        }
     }
 
     public Collection<GameData> listGames(String authToken, UserService userService) throws DataAccessException {
@@ -95,11 +87,6 @@ public class GameService {
             throw new DataAccessException("Unauthorized logout request");
         }
 
-//        Collection<GamesList> list = new ArrayList<>();
-//        //Collection<GameData> x = game.listGames();
-//        for (GameData data : game.listGames()) {
-//            list.add(new GamesList(data.gameID(), data.whiteUsername(), data.blackUsername(), data.gameName()));
-//        }
         return game.listGames();
 
     }

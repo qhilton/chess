@@ -6,7 +6,4 @@ import model.AuthData;
 
 public interface DataAccess {
     void clear();
-//    UserData getUser();
-//    GameData getGame();
-//    void createUser(String username, String password, String email);
 }

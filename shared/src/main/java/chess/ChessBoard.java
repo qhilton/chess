@@ -40,7 +40,6 @@ public class ChessBoard implements Cloneable {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        //chessPieces = new ChessPiece[8][8];
         addPiece(new ChessPosition(1,1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(1,2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(1,3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
@@ -87,24 +86,24 @@ public class ChessBoard implements Cloneable {
         }
     }
 
-//    @Override
-//    public String toString() {
-//        String stringBoard = "";
-//        for (int x = 7; x >= 0; x--) {
-//            stringBoard += "|";
-//            for (int y = 0; y < 8; y++) {
-//                if (chessPieces[x][y] != null) {
-//                    stringBoard += chessPieces[x][y].toString() + "|";
-//                } else {
-//                    stringBoard += " |";
-//                }
-//            }
-//            if (x != 0) {
-//                stringBoard += "\n";
-//            }
-//        }
-//        return stringBoard;
-//    }
+    @Override
+    public String toString() {
+        String stringBoard = "";
+        for (int x = 7; x >= 0; x--) {
+            stringBoard += "|";
+            for (int y = 0; y < 8; y++) {
+                if (chessPieces[x][y] != null) {
+                    stringBoard += chessPieces[x][y].toString() + "|";
+                } else {
+                    stringBoard += " |";
+                }
+            }
+            if (x != 0) {
+                stringBoard += "\n";
+            }
+        }
+        return stringBoard;
+    }
 
     @Override
     public boolean equals(Object o) {

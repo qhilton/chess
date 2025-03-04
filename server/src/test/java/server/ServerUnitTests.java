@@ -119,10 +119,21 @@ public class ServerUnitTests {
         CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
 
         assertTrue(createGameResult.gameID() > 0);
+    }
 
-//        assertThrows(DataAccessException.class, () -> {
-//            userService.getAuthDAO().getAuth(loginResult.authToken());
-//        });
+    @Test
+    public void createGameNegativeTest() throws DataAccessException {
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
+        LoginResult loginResult = userService.login(loginRequest);
+        userService.logout(loginResult.authToken());
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        //CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+
+        assertThrows(DataAccessException.class, () -> {
+            gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+        });
     }
 
 }

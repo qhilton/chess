@@ -1,22 +1,14 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import model.AuthData;
 import model.GameData;
-import model.GamesList;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
-import request.LoginRequest;
 import result.CreateGameResult;
-import result.LoginResult;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
 
 public class GameService {
     GameDAO game = new GameDAO();

@@ -2,10 +2,8 @@ package server;
 
 import dataaccess.DataAccessException;
 import model.GameData;
-import model.GamesList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import passoff.model.TestAuthResult;
 import request.*;
 import result.CreateGameResult;
 import result.LoginResult;

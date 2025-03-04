@@ -2,23 +2,36 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import model.GameData;
+import model.GamesList;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import service.GameService;
+
+import java.util.Collection;
 
 public class GameHandler {
     GameService gameService = new GameService();
     Gson serializer = new Gson();
 
-    public String handleListGames(String json) throws DataAccessException {
-        var listGamesResult = gameService.listGames(serializer.fromJson(json, String.class));
-        return serializer.toJson(listGamesResult);
-    }
-
     public String handleCreateGame(String authToken, String json, UserHandler userHandler) throws DataAccessException {
         var createGameRequest = serializer.fromJson(json, CreateGameRequest.class);
         CreateGameResult createGameResult = gameService.createGame(authToken, createGameRequest, userHandler.getUserService());
         return serializer.toJson(createGameResult);
+    }
+
+    public void handleJoinGame(String authToken, String json, UserHandler userHandler) throws DataAccessException {
+        JoinGameRequest joinGameRequest = serializer.fromJson(json, JoinGameRequest.class);
+        gameService.joinGame(authToken, joinGameRequest, userHandler.getUserService());
+        //return serializer.toJson(createGameResult);
+    }
+
+    public String handleListGames(String json, UserHandler userHandler) throws DataAccessException {
+        Collection<GameData> gameData = (gameService.listGames(serializer.fromJson(json, String.class), userHandler.getUserService()));
+        ListGamesResult games = new ListGamesResult(gameData);
+        return serializer.toJson(games);
     }
 
 

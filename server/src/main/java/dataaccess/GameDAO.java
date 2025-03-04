@@ -21,7 +21,10 @@ public class GameDAO implements DataAccess {
         return gameID;
     }
 
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws DataAccessException {
+        if (allGames.get(gameID) == null) {
+            throw new DataAccessException("ID not found: " + gameID);
+        }
         return allGames.get(gameID);
     }
 
@@ -29,9 +32,9 @@ public class GameDAO implements DataAccess {
         return allGames.values();
     }
 
-    public void updateGame(int gameID, ChessGame game) {
-        GameData gameData = allGames.get(gameID);
-        allGames.put(gameID, new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), game));
+    public void updateGame(int gameID, GameData gameData) {
+        //GameData gameData = allGames.get(gameID);
+        allGames.put(gameID, gameData);
     }
 
     @Override

@@ -19,8 +19,9 @@ public class Server {
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
-        Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
+        Spark.get("/game", this::listGames);
 
 
 
@@ -87,11 +88,12 @@ public class Server {
         }
     }
 
-    private Object listGames(Request req, Response res) {
+    private Object createGame(Request req, Response res) {
         try {
-            userHandler.handleLogout(req.headers("authorization"));
+            String authToken = req.headers("authorization");
+            var createGame = gameHandler.handleCreateGame(authToken, req.body(), userHandler);
             res.status(200);
-            return "{}";
+            return createGame;
         } catch (Exception e) {
             if (e.getMessage().contains("Unauthorized")) {
                 res.status(401);
@@ -103,12 +105,36 @@ public class Server {
         }
     }
 
-    private Object createGame(Request req, Response res) {
+    private Object joinGame(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
-            var createGame = gameHandler.handleCreateGame(authToken, req.body(), userHandler);
+            gameHandler.handleJoinGame(authToken, req.body(), userHandler);
             res.status(200);
-            return createGame;
+            return "{}";
+        } catch (Exception e) {
+            if (e.getMessage().contains("Bad request")) {
+                res.status(400);
+                return "{ \"message\": \"Error: bad request\" }";
+            }
+            else if (e.getMessage().contains("Unauthorized")) {
+                res.status(401);
+                return "{ \"message\": \"Error: unauthorized\" }";
+            }
+            else if (e.getMessage().contains("Color already taken")) {
+                res.status(403);
+                return "{ \"message\": \"Error: already taken\" }";
+            }
+
+            res.status(500);
+            return "{ \"message\": \"Error:\" }";
+        }
+    }
+
+    private Object listGames(Request req, Response res) {
+        try {
+            var games = gameHandler.handleListGames(req.headers("authorization"), userHandler);
+            res.status(200);
+            return games;
         } catch (Exception e) {
             if (e.getMessage().contains("Unauthorized")) {
                 res.status(401);

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import passoff.model.TestAuthResult;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
@@ -78,6 +79,27 @@ public class ServerUnitTests {
 
         assertThrows(DataAccessException.class, () -> {
             userService.login(loginRequest);
+        });
+    }
+
+    @Test
+    public void logoutPositiveTest() throws DataAccessException {
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
+        LoginResult result = userService.login(loginRequest);
+        userService.logout(result.authToken());
+
+        assertThrows(DataAccessException.class, () -> {
+                userService.getAuthDAO().getAuth(result.authToken());
+        });
+    }
+
+    @Test
+    public void logoutNegativeTest() throws DataAccessException {
+        userService.register(registerRequest);
+
+        assertThrows(DataAccessException.class, () -> {
+            userService.logout("authToken");
         });
     }
 

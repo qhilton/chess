@@ -17,7 +17,10 @@ public class AuthDAO implements DataAccess {
         allAuths.put(authData.authToken(), authData);
     }
 
-    public AuthData getAuth(String authToken) {
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        if (!allAuths.containsKey(authToken)) {
+            throw new DataAccessException("Unauthorized logout request");
+        }
         return allAuths.get(authToken);
     }
 

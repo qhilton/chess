@@ -1,11 +1,12 @@
 package server;
 
+import handler.GameHandler;
 import handler.UserHandler;
 import spark.*;
 
 public class Server {
     UserHandler userHandler = new UserHandler();
-    UserHandler gameHandler = new UserHandler();
+    GameHandler gameHandler = new GameHandler();
     UserHandler authHandler = new UserHandler();
 
     public int run(int desiredPort) {
@@ -18,6 +19,8 @@ public class Server {
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
+        Spark.get("/game", this::listGames);
+        Spark.post("/game", this::createGame);
 
 
 
@@ -73,6 +76,39 @@ public class Server {
             userHandler.handleLogout(req.headers("authorization"));
             res.status(200);
             return "{}";
+        } catch (Exception e) {
+            if (e.getMessage().contains("Unauthorized")) {
+                res.status(401);
+                return "{ \"message\": \"Error: unauthorized\" }";
+            }
+
+            res.status(500);
+            return "{ \"message\": \"Error:\" }";
+        }
+    }
+
+    private Object listGames(Request req, Response res) {
+        try {
+            userHandler.handleLogout(req.headers("authorization"));
+            res.status(200);
+            return "{}";
+        } catch (Exception e) {
+            if (e.getMessage().contains("Unauthorized")) {
+                res.status(401);
+                return "{ \"message\": \"Error: unauthorized\" }";
+            }
+
+            res.status(500);
+            return "{ \"message\": \"Error:\" }";
+        }
+    }
+
+    private Object createGame(Request req, Response res) {
+        try {
+            String authToken = req.headers("authorization");
+            var createGame = gameHandler.handleCreateGame(authToken, req.body(), userHandler);
+            res.status(200);
+            return createGame;
         } catch (Exception e) {
             if (e.getMessage().contains("Unauthorized")) {
                 res.status(401);

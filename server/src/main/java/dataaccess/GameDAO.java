@@ -5,16 +5,20 @@ import model.GameData;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class GameDAO implements DataAccess {
     Map<Integer, GameData> allGames;
+    private int nextID = 1;
 
     public GameDAO() {
         allGames = new HashMap<>();
     }
 
-    public void createGame(GameData gameData) {
-        allGames.put(gameData.gameID(), gameData);
+    public int createGame(String gameName) {
+        int gameID = nextID++;
+        allGames.put(gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
+        return gameID;
     }
 
     public GameData getGame(int gameID) {

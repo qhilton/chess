@@ -4,11 +4,14 @@ import dataaccess.DataAccessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import passoff.model.TestAuthResult;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.LoginResult;
 import result.RegisterResult;
+import service.GameService;
 import service.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +20,14 @@ public class ServerUnitTests {
 
     private RegisterRequest registerRequest;
     private UserService userService;
+    private GameService gameService;
+
 
     @BeforeEach
     public void init() {
         registerRequest = new RegisterRequest("myUserName", "myPassword", "myEmail");
         userService = new UserService();
+        gameService = new GameService();
     }
 
 
@@ -101,6 +107,22 @@ public class ServerUnitTests {
         assertThrows(DataAccessException.class, () -> {
             userService.logout("authToken");
         });
+    }
+
+    @Test
+    public void createGamePositiveTest() throws DataAccessException {
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
+        LoginResult loginResult = userService.login(loginRequest);
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+
+        assertTrue(createGameResult.gameID() > 0);
+
+//        assertThrows(DataAccessException.class, () -> {
+//            userService.getAuthDAO().getAuth(loginResult.authToken());
+//        });
     }
 
 }

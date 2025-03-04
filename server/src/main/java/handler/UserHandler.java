@@ -34,5 +34,9 @@ public class UserHandler {
         userService.clear();
     }
 
+    public UserService getUserService() {
+        return userService;
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package server;
+package service;
 
 import dataaccess.DataAccessException;
 import model.GameData;
@@ -8,8 +8,6 @@ import request.*;
 import result.CreateGameResult;
 import result.LoginResult;
 import result.RegisterResult;
-import service.GameService;
-import service.UserService;
 
 import java.util.Collection;
 

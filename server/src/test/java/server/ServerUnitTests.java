@@ -1,18 +1,19 @@
 package server;
 
 import dataaccess.DataAccessException;
+import model.GameData;
+import model.GamesList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import passoff.model.TestAuthResult;
-import request.CreateGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import result.CreateGameResult;
 import result.LoginResult;
 import result.RegisterResult;
 import service.GameService;
 import service.UserService;
+
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -129,11 +130,65 @@ public class ServerUnitTests {
         userService.logout(loginResult.authToken());
 
         CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
-        //CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
 
         assertThrows(DataAccessException.class, () -> {
             gameService.createGame(loginResult.authToken(), createGameRequest, userService);
         });
+    }
+
+    @Test
+    public void joinGamePositiveTest() throws DataAccessException {
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
+        LoginResult loginResult = userService.login(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
+        gameService.joinGame(loginResult.authToken(), joinGameRequest, userService);
+
+        assertTrue(createGameResult.gameID() > 0);
+    }
+
+    @Test
+    public void joinGameNegativeTest() throws DataAccessException {
+        userService.register(registerRequest);
+        LoginRequest loginRequest1 = new LoginRequest("myUserName", "myPassword");
+        LoginResult loginResult1 = userService.login(loginRequest1);
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        CreateGameResult createGameResult = gameService.createGame(loginResult1.authToken(), createGameRequest, userService);
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
+        gameService.joinGame(loginResult1.authToken(), joinGameRequest, userService);
+
+        userService.register(new RegisterRequest("otherUserName", "myPassword", "email"));
+        LoginRequest loginRequest2 = new LoginRequest("otherUserName", "myPassword");
+        LoginResult loginResult2 = userService.login(loginRequest2);
+
+        assertThrows(DataAccessException.class, () -> {
+            gameService.joinGame(loginResult2.authToken(), joinGameRequest, userService);
+        });
+    }
+
+    @Test
+    public void listGamesPositiveTest() throws DataAccessException {
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
+        LoginResult loginResult = userService.login(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+
+        Collection<GameData> games = (gameService.listGames(loginResult.authToken(), userService));
+        assertEquals(1, games.size());
+        assertNotNull(games);
+    }
+
+    @Test
+    public void listGamesNegativeTest() throws DataAccessException {
+        userService.register(registerRequest);
+        LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
+        LoginResult loginResult = userService.login(loginRequest);
+
+        Collection<GameData> games = (gameService.listGames(loginResult.authToken(), userService));
+        assertEquals(0, games.size());
     }
 
 }

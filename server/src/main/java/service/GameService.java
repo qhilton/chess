@@ -36,7 +36,10 @@ public class GameService {
         if (authToken == null) {
             throw new DataAccessException("Unauthorized create request");
         }
-        else if (joinGameRequest.gameID() <= 0 || joinGameRequest.playerColor() == null || (!joinGameRequest.playerColor().equals("WHITE") && !joinGameRequest.playerColor().equals("BLACK"))) {
+        else if (joinGameRequest.gameID() <= 0 || joinGameRequest.playerColor() == null) {
+            throw new DataAccessException("Bad request");
+        }
+        else if (!joinGameRequest.playerColor().equals("WHITE") && !joinGameRequest.playerColor().equals("BLACK")) {
             throw new DataAccessException("Bad request");
         }
 

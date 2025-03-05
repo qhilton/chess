@@ -190,7 +190,8 @@ public class ChessGame implements Cloneable {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition myPosition = new ChessPosition(i, j);
                 if (board.getPiece(myPosition) != null) {
-                    if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(myPosition).getTeamColor() == color) {
+                    boolean sameColor = board.getPiece(myPosition).getTeamColor() == color;
+                    if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KING && sameColor) {
                         return myPosition;
                     }
                 }

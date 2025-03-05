@@ -119,17 +119,24 @@ public class ChessGame implements Cloneable {
                 ChessPosition myPosition = new ChessPosition(i, j);
                 ChessPiece currentPiece = board.getPiece(myPosition);
 
-                if (currentPiece != null) {
-                    ArrayList<ChessMove> currentMoves = (ArrayList<ChessMove>) currentPiece.pieceMoves(board, myPosition);
-                    for (ChessMove move : currentMoves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
-                    }
+                if (canCheck(currentPiece, kingPosition, myPosition)) {
+                    return true;
                 }
             }
         }
 
+        return false;
+    }
+
+    public boolean canCheck(ChessPiece currentPiece, ChessPosition kingPosition, ChessPosition myPosition) {
+        if (currentPiece != null) {
+            ArrayList<ChessMove> currentMoves = (ArrayList<ChessMove>) currentPiece.pieceMoves(board, myPosition);
+            for (ChessMove move : currentMoves) {
+                if (move.getEndPosition().equals(kingPosition)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 

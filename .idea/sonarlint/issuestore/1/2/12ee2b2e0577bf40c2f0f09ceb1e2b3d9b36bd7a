@@ -1,11 +1,9 @@
 
-h	java:S112è"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8èÊƒòÍ2
+h	java:S112æ"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8¹¢Ö2
 q
-java:S1192X"ODefine a constant instead of duplicating this literal "Invalid move: " 3 times.(ËÖ©şÿÿÿÿ8ëÊƒòÍ2
-R
-java:S1066Ö"/Merge this if statement with the enclosing one.(É“ğéÿÿÿÿÿ8ìÊƒòÍ2
+java:S1192X"ODefine a constant instead of duplicating this literal "Invalid move: " 3 times.(ËÖ©şÿÿÿÿ8¹¢Ö2
 v
-java:S2975à"SRemove this "clone" implementation; use a copy constructor or copy factory instead.(“‰‹¢ÿÿÿÿÿ8°ÍƒòÍ2
-^	java:S125ã"<This block of commented-out lines of code should be removed.(¤óƒŠÿÿÿÿÿ8±ÍƒòÍ2
+java:S2975Ş"SRemove this "clone" implementation; use a copy constructor or copy factory instead.(“‰‹¢ÿÿÿÿÿ8ò¹¢Ö2
+^	java:S125á"<This block of commented-out lines of code should be removed.(¤óƒŠÿÿÿÿÿ8ó¹¢Ö2
 P
-java:S1905ä"-Remove this unnecessary cast to "ChessBoard".(ƒ¤©¬øÿÿÿÿ8²ÍƒòÍ2
+java:S1905â"-Remove this unnecessary cast to "ChessBoard".(ƒ¤©¬øÿÿÿÿ8ó¹¢Ö2

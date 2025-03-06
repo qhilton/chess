@@ -1,6 +1,12 @@
 
-g	java:S112V"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8¯å‘ïÍ2
-X	java:S125+"<This block of commented-out lines of code should be removed.(šóë¬8æ‘ïÍ2
+g	java:S112U"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8¯å‘ïÍ2
+>
+java:S1643]"Use a StringBuilder instead.(‰¼ª€ıÿÿÿÿ8›Ä›Ö2
+9
+java:S1643`"Use a StringBuilder instead.(ßÊøƒ8›Ä›Ö2
+>
+java:S1643b"Use a StringBuilder instead.(‰¼ª€ıÿÿÿÿ8›Ä›Ö2
+>
+java:S1643f"Use a StringBuilder instead.(ƒ«Â˜ÿÿÿÿÿ8›Ä›Ö2
 u
-java:S2975F"SRemove this "clone" implementation; use a copy constructor or copy factory instead.(ÖãÒìşÿÿÿÿ8­æ‘ïÍ2
-]	java:S125["<This block of commented-out lines of code should be removed.(òß¿•üÿÿÿÿ8¶æ‘ïÍ2
+java:S2975E"SRemove this "clone" implementation; use a copy constructor or copy factory instead.(ÖãÒìşÿÿÿÿ8­æ‘ïÍ2

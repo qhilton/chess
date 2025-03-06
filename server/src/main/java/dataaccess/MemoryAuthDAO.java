@@ -5,10 +5,10 @@ import model.AuthData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AuthDAO implements DataAccess {
+public class MemoryAuthDAO implements DataAccess {
     Map<String, AuthData> allAuths;
 
-    public AuthDAO() {
+    public MemoryAuthDAO() {
         allAuths = new HashMap<>();
     }
 

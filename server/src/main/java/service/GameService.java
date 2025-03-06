@@ -1,8 +1,8 @@
 package service;
 
-import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
+import dataaccess.MemoryGameDAO;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
@@ -11,8 +11,8 @@ import result.CreateGameResult;
 import java.util.Collection;
 
 public class GameService {
-    GameDAO game = new GameDAO();
-    AuthDAO auth = new AuthDAO();
+    MemoryGameDAO game = new MemoryGameDAO();
+    MemoryAuthDAO auth = new MemoryAuthDAO();
 
     public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest, UserService userService) throws DataAccessException {
         if (authToken == null) {

@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameDAO implements DataAccess {
+public class MemoryGameDAO implements DataAccess {
     Map<Integer, GameData> allGames;
     private int nextID = 1;
 
-    public GameDAO() {
+    public MemoryGameDAO() {
         allGames = new HashMap<>();
     }
 

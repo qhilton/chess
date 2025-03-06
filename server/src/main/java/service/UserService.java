@@ -1,8 +1,8 @@
 package service;
 
-import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.UserDAO;
+import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
@@ -13,8 +13,8 @@ import result.RegisterResult;
 import java.util.UUID;
 
 public class UserService {
-    UserDAO user = new UserDAO();
-    AuthDAO auth = new AuthDAO();
+    MemoryUserDAO user = new MemoryUserDAO(); //change to SQLUserDAO
+    MemoryAuthDAO auth = new MemoryAuthDAO(); //change to SQLAuthDAO
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
@@ -38,11 +38,11 @@ public class UserService {
         auth.clear();
     }
 
-    public UserDAO getUserDAO() {
+    public MemoryUserDAO getUserDAO() {
         return user;
     }
 
-    public AuthDAO getAuthDAO() {
+    public MemoryAuthDAO getAuthDAO() {
         return auth;
     }
 

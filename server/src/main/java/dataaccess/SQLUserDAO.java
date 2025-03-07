@@ -30,7 +30,7 @@ public class SQLUserDAO {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, userData.username());
                 preparedStatement.setString(2, userData.password());
-                preparedStatement.setString(2, userData.email());
+                preparedStatement.setString(3, userData.email());
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -77,10 +77,10 @@ public class SQLUserDAO {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  user (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`),
+              username varchar(256) NOT NULL,
+              password varchar(256) NOT NULL,
+              email varchar(256) NOT NULL,
+              PRIMARY KEY (username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };

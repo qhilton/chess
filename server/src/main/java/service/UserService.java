@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
@@ -49,10 +50,11 @@ public class UserService {
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         String username = loginRequest.username();
         String password = loginRequest.password();
+        var hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         if (username == null || password == null) {
             throw new DataAccessException("Bad request");
         }
-        else if (user.unauthorizedUser(username, password)) {
+        else if (user.unauthorizedUser(username, hashedPassword)) {
             throw new DataAccessException("Unauthorized login request");
         }
 

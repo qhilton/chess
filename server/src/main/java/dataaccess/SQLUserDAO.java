@@ -56,6 +56,7 @@ public class SQLUserDAO {
         } catch (SQLException e) {
             throw new DataAccessException("User not found: " + username);
         }
+        return null;
     }
 
     public Boolean unauthorizedUser(String username, String password) throws DataAccessException {

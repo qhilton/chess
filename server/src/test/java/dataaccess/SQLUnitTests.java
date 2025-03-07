@@ -8,8 +8,7 @@ import result.RegisterResult;
 import service.GameService;
 import service.UserService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SQLUnitTests {
     private SQLUserDAO user;
@@ -33,5 +32,14 @@ public class SQLUnitTests {
         String username = user.getUser("myUsername").username();
 
         assertEquals("myUsername", username);
+    }
+
+    @Test
+    public void createUserNegativeTest() throws Exception {
+        user.createUser(userData);
+
+        assertThrows(DataAccessException.class, () -> {
+            user.createUser(userData);
+        });
     }
 }

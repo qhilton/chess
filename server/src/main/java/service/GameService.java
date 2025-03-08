@@ -13,7 +13,6 @@ import java.util.Collection;
 
 public class GameService {
     MemoryGameDAO game = new MemoryGameDAO();
-    MemoryAuthDAO auth = new MemoryAuthDAO();
     private int nextID = 1;
 
     public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest, UserService userService) throws DataAccessException {
@@ -99,6 +98,5 @@ public class GameService {
 
     public void clear() {
         game.clear();
-        auth.clear();
     }
 }

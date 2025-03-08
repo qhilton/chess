@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.MemoryAuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
@@ -14,10 +12,18 @@ import result.RegisterResult;
 import java.util.UUID;
 
 public class UserService {
-    MemoryUserDAO user = new MemoryUserDAO(); //change to SQLUserDAO
-    MemoryAuthDAO auth = new MemoryAuthDAO(); //change to SQLAuthDAO
+    SQLUserDAO user; //change to SQLUserDAO
+    SQLAuthDAO auth; //change to SQLAuthDAO
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+//    public UserService() throws ResponseException, DataAccessException {
+//        user = new SQLUserDAO();
+//        auth = new SQLAuthDAO();
+//    }
+
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ResponseException {
+        user = new SQLUserDAO();
+        auth = new SQLAuthDAO();
+
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new DataAccessException("Bad request");
         }
@@ -39,11 +45,11 @@ public class UserService {
         auth.clear();
     }
 
-    public MemoryUserDAO getUserDAO() {
-        return user;
-    }
-
-    public MemoryAuthDAO getAuthDAO() {
+//    public SQLUserDAO getUserDAO() {
+//        return user;
+//    }
+//
+    public SQLAuthDAO getAuthDAO() {
         return auth;
     }
 
@@ -54,7 +60,7 @@ public class UserService {
         if (username == null || password == null) {
             throw new DataAccessException("Bad request");
         }
-        else if (user.authorizedUser(username, password)) {
+        else if (!user.authorizedUser(username, password)) {
             throw new DataAccessException("Unauthorized login request");
         }
 

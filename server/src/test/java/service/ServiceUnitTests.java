@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ServerUnitTests {
+public class ServiceUnitTests {
 
     private RegisterRequest registerRequest;
     private UserService userService;
@@ -21,7 +22,7 @@ public class ServerUnitTests {
 
 
     @BeforeEach
-    public void init() {
+    public void init() throws ResponseException, DataAccessException {
         registerRequest = new RegisterRequest("myUserName", "myPassword", "myEmail");
         userService = new UserService();
         gameService = new GameService();
@@ -29,12 +30,14 @@ public class ServerUnitTests {
 
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws ResponseException, DataAccessException {
+        RegisterRequest setupRequest = new RegisterRequest("setupUserName", "setupPassword", "setupEmail");
+        userService.register(setupRequest);
         userService.clear();
     }
 
     @Test
-    public void registerPositiveTest() throws Exception {
+    public void registerPositiveTest() throws Exception, ResponseException {
         RegisterResult result = userService.register(registerRequest);
 
         assertEquals("myUserName", result.username());
@@ -42,7 +45,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void registerNegativeTest() throws DataAccessException {
+    public void registerNegativeTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
 
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
@@ -53,21 +56,20 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void userServiceClearTest() throws DataAccessException {
-        userService.register(registerRequest);
-
-        assertFalse(userService.getUserDAO().getAllUsers().isEmpty());
-        assertFalse(userService.getAuthDAO().getAllAuths().isEmpty());
+    public void userServiceClearTest() throws DataAccessException, ResponseException {
+        RegisterResult result = userService.register(registerRequest);
 
         userService.clear();
 
-        assertTrue(userService.getUserDAO().getAllUsers().isEmpty());
-        assertTrue(userService.getAuthDAO().getAllAuths().isEmpty());
+        assertThrows(DataAccessException.class, () -> {
+            assertNull(userService.getAuthDAO().getAuth(result.authToken()));
+        });
+
 
     }
 
     @Test
-    public void loginPositiveTest() throws DataAccessException {
+    public void loginPositiveTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult result = userService.login(loginRequest);
@@ -76,7 +78,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void loginNegativeTest() throws DataAccessException {
+    public void loginNegativeTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "notMyPassword");
 
@@ -86,7 +88,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void logoutPositiveTest() throws DataAccessException {
+    public void logoutPositiveTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult result = userService.login(loginRequest);
@@ -98,7 +100,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void logoutNegativeTest() throws DataAccessException {
+    public void logoutNegativeTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
 
         assertThrows(DataAccessException.class, () -> {
@@ -107,7 +109,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void createGamePositiveTest() throws DataAccessException {
+    public void createGamePositiveTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);
@@ -119,7 +121,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void createGameNegativeTest() throws DataAccessException {
+    public void createGameNegativeTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);
@@ -133,7 +135,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void joinGamePositiveTest() throws DataAccessException {
+    public void joinGamePositiveTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);
@@ -146,7 +148,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void joinGameNegativeTest() throws DataAccessException {
+    public void joinGameNegativeTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest1 = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult1 = userService.login(loginRequest1);
@@ -165,7 +167,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void listGamesPositiveTest() throws DataAccessException {
+    public void listGamesPositiveTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);
@@ -178,7 +180,7 @@ public class ServerUnitTests {
     }
 
     @Test
-    public void listGamesNegativeTest() throws DataAccessException {
+    public void listGamesNegativeTest() throws DataAccessException, ResponseException {
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);

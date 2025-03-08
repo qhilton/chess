@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
@@ -12,7 +13,7 @@ public class UserHandler {
     UserService userService = new UserService();
     Gson serializer = new Gson();
 
-    public String handleRegister(String json) throws DataAccessException {
+    public String handleRegister(String json) throws DataAccessException, ResponseException {
         RegisterRequest registerRequest = serializer.fromJson(json, RegisterRequest.class);
         RegisterResult registerResult = userService.register(registerRequest);
         return serializer.toJson(registerResult);

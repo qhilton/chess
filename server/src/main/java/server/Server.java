@@ -1,5 +1,7 @@
 package server;
 
+import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import handler.GameHandler;
 import handler.UserHandler;
 import spark.*;
@@ -7,6 +9,11 @@ import spark.*;
 public class Server {
     UserHandler userHandler = new UserHandler();
     GameHandler gameHandler = new GameHandler();
+
+//    public Server() throws ResponseException, DataAccessException {
+//        userHandler = new UserHandler();
+//        gameHandler = new GameHandler();
+//    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -48,9 +55,12 @@ public class Server {
                 return "{ \"message\": \"Error: already taken\" }";
             }
 
-            res.status(500);
-            return "{ \"message\": \"Error:\" }";
+
+        } catch (ResponseException e) {
+            e.printStackTrace();
         }
+        res.status(500);
+        return "{ \"message\": \"Error:\" }";
     }
 
     private Object login(Request req, Response res) {
@@ -59,7 +69,7 @@ public class Server {
             res.status(200);
             return loginUser;
         } catch (Exception e) {
-            if (e.getMessage().contains("Unauthorized")) {
+            if (e.getMessage().contains("Unauthorized") || e.getMessage().contains("not found")) {
                 res.status(401);
                 return "{ \"message\": \"Error: unauthorized\" }";
             }

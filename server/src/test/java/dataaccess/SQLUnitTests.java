@@ -82,7 +82,7 @@ public class SQLUnitTests {
     }
 
     @Test
-    public void clearPositiveTest() throws Exception {
+    public void clearUserPositiveTest() throws Exception {
         user.createUser(userData);
         user.clear();
 
@@ -124,6 +124,39 @@ public class SQLUnitTests {
 
         assertThrows(DataAccessException.class, () -> {
             auth.getAuth("invalidAuthToken").authToken();
+        });
+    }
+
+    @Test
+    public void deleteAuthPositiveTest() throws Exception {
+        auth.createAuth(authData);
+        String authToken = auth.getAuth("myAuthToken").authToken();
+
+        assertEquals("myAuthToken", authToken);
+
+        auth.deleteAuth(authToken);
+
+        assertThrows(DataAccessException.class, () -> {
+            auth.getAuth("myAuthToken").authToken();
+        });
+    }
+
+    @Test
+    public void deleteAuthNegativeTest() throws Exception {
+        auth.createAuth(authData);
+        String authToken = auth.getAuth("myAuthToken").authToken();
+        auth.deleteAuth("invalidAuthToken");
+
+        assertEquals("myAuthToken", authToken);
+    }
+
+    @Test
+    public void clearAuthPositiveTest() throws Exception {
+        auth.createAuth(authData);
+        auth.clear();
+
+        assertThrows(DataAccessException.class, () -> {
+            auth.getAuth("myAuthToken");
         });
     }
 }

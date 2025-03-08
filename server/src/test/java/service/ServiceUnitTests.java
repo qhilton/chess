@@ -31,9 +31,8 @@ public class ServiceUnitTests {
 
     @BeforeEach
     public void setup() throws ResponseException, DataAccessException {
-        RegisterRequest setupRequest = new RegisterRequest("setupUserName", "setupPassword", "setupEmail");
-        userService.register(setupRequest);
         userService.clear();
+        gameService.clear();
     }
 
     @Test

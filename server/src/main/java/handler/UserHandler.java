@@ -29,7 +29,7 @@ public class UserHandler {
         userService.logout(serializer.fromJson(json, String.class));
     }
 
-    public void clear() {
+    public void clear() throws ResponseException, DataAccessException {
         userService.clear();
     }
 

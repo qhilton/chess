@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
@@ -15,7 +16,7 @@ public class GameHandler {
     GameService gameService = new GameService();
     Gson serializer = new Gson();
 
-    public String handleCreateGame(String authToken, String json, UserHandler userHandler) throws DataAccessException {
+    public String handleCreateGame(String authToken, String json, UserHandler userHandler) throws DataAccessException, ResponseException {
         var createGameRequest = serializer.fromJson(json, CreateGameRequest.class);
         CreateGameResult createGameResult = gameService.createGame(authToken, createGameRequest, userHandler.getUserService());
         return serializer.toJson(createGameResult);
@@ -33,7 +34,7 @@ public class GameHandler {
     }
 
 
-    public void clear() {
+    public void clear() throws ResponseException, DataAccessException {
         gameService.clear();
     }
 }

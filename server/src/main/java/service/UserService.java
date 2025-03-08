@@ -40,7 +40,14 @@ public class UserService {
 
     }
 
-    public void clear() {
+    public void clear() throws ResponseException, DataAccessException {
+        if (user == null) {
+            user = new SQLUserDAO();
+        }
+        if (auth == null) {
+            auth = new SQLAuthDAO();
+        }
+
         user.clear();
         auth.clear();
     }

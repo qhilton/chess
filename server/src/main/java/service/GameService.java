@@ -1,9 +1,7 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
@@ -12,10 +10,12 @@ import result.CreateGameResult;
 import java.util.Collection;
 
 public class GameService {
-    MemoryGameDAO game = new MemoryGameDAO();
+    SQLGameDAO game;
     private int nextID = 1;
 
-    public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest, UserService userService) throws DataAccessException {
+    public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest, UserService userService) throws DataAccessException, ResponseException {
+        game = new SQLGameDAO();
+
         if (authToken == null) {
             throw new DataAccessException("Unauthorized create request");
         }
@@ -96,7 +96,11 @@ public class GameService {
 
     }
 
-    public void clear() {
+    public void clear() throws ResponseException, DataAccessException {
+        if (game == null) {
+            game = new SQLGameDAO();
+        }
+
         game.clear();
     }
 }

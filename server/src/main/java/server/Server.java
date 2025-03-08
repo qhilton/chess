@@ -107,9 +107,12 @@ public class Server {
                 return "{ \"message\": \"Error: unauthorized\" }";
             }
 
-            res.status(500);
-            return "{ \"message\": \"Error:\" }";
+        } catch (ResponseException e) {
+            e.printStackTrace();
         }
+
+        res.status(500);
+        return "{ \"message\": \"Error:\" }";
     }
 
     private Object joinGame(Request req, Response res) {
@@ -158,7 +161,7 @@ public class Server {
             gameHandler.clear();
             res.status(200);
             return "";
-        } catch (Exception e) {
+        } catch (Exception | ResponseException e) {
             res.status(500);
             return "{ \"message\": \"Error: (description of error)\" }";
         }

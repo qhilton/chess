@@ -4,7 +4,8 @@ import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
 
-public class SQLUserDAO {
+public class SQLUserDAO implements UserDAO {
+    private String salt = BCrypt.gensalt();
 
     public SQLUserDAO() throws ResponseException, DataAccessException {
         try {
@@ -24,12 +25,13 @@ public class SQLUserDAO {
         }
     }
 
+    @Override
     public void createUser(UserData userData) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, userData.username());
-                preparedStatement.setString(2, userData.password());
+                preparedStatement.setString(2, hashPassword(userData.password()));
                 preparedStatement.setString(3, userData.email());
                 preparedStatement.executeUpdate();
             }
@@ -38,13 +40,14 @@ public class SQLUserDAO {
         }
     }
 
+    @Override
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM user WHERE username=?";
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, username);
                 try (var result = preparedStatement.executeQuery()) {
-                    if (result.next()) {
+                    if (result != null && result.next()) {
                         var password = result.getString("password");
                         var email = result.getString("email");
                         return new UserData(username, password, email);
@@ -54,15 +57,16 @@ public class SQLUserDAO {
         } catch (SQLException e) {
             throw new DataAccessException("User not found: " + username);
         }
-        return null;
+        throw new DataAccessException("User not found: " + username);
     }
 
-    public Boolean unauthorizedUser(String username, String password) throws DataAccessException {
+    @Override
+    public Boolean authorizedUser(String username, String password) throws DataAccessException {
         UserData userData = getUser(username);
-        var hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        return BCrypt.checkpw(hashedPassword, userData.password());
+        return BCrypt.checkpw(password, userData.password());
     }
 
+    @Override
     public void clear() {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "TRUNCATE user";
@@ -72,6 +76,10 @@ public class SQLUserDAO {
         } catch (SQLException | DataAccessException e) {
             //throw new DataAccessException("" + e);
         }
+    }
+
+    private String hashPassword(String password) {
+        return BCrypt.hashpw(password, salt);
     }
 
     private final String[] createStatements = {

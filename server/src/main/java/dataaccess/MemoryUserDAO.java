@@ -34,7 +34,7 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public Boolean unauthorizedUser(String username, String password) {
+    public Boolean authorizedUser(String username, String password) {
         return (!allUsers.containsKey(username) || !allUsers.get(username).password().equals(password));
     }
 

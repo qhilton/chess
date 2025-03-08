@@ -50,11 +50,11 @@ public class UserService {
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         String username = loginRequest.username();
         String password = loginRequest.password();
-        var hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        //var hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         if (username == null || password == null) {
             throw new DataAccessException("Bad request");
         }
-        else if (user.unauthorizedUser(username, hashedPassword)) {
+        else if (user.authorizedUser(username, password)) {
             throw new DataAccessException("Unauthorized login request");
         }
 

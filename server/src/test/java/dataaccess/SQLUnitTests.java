@@ -1,29 +1,34 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mindrot.jbcrypt.BCrypt;
-import request.RegisterRequest;
-import result.RegisterResult;
-import service.GameService;
-import service.UserService;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SQLUnitTests {
     private SQLUserDAO user;
     private SQLAuthDAO auth;
+    private SQLGameDAO game;
     private UserData userData;
     private AuthData authData;
+    private GameData gameData;
+
 
     @BeforeEach
     public void init() throws ResponseException, DataAccessException {
         user = new SQLUserDAO();
         auth = new SQLAuthDAO();
+        game = new SQLGameDAO();
         userData = new UserData("myUsername", "myPassword", "myEmail");
         authData = new AuthData("myAuthToken", "myUsername");
+        gameData = new GameData(1, "white", "black", "myGame", new ChessGame());
     }
 
 
@@ -31,7 +36,12 @@ public class SQLUnitTests {
     public void setup() {
         user.clear();
         auth.clear();
+        game.clear();
     }
+
+
+
+    /*** SQLUserDAO Unit Tests ***/
 
     @Test
     public void createUserPositiveTest() throws Exception {
@@ -92,6 +102,7 @@ public class SQLUnitTests {
     }
 
 
+    /*** SQLAuthDAO Unit Tests ***/
 
     @Test
     public void createAuthPositiveTest() throws Exception {
@@ -157,6 +168,86 @@ public class SQLUnitTests {
 
         assertThrows(DataAccessException.class, () -> {
             auth.getAuth("myAuthToken");
+        });
+    }
+
+
+
+    /*** SQLGameDAO Unit Tests ***/
+
+    @Test
+    public void createGamePositiveTest() throws Exception {
+        game.createGame(gameData);
+        String gameName = game.getGame(1).gameName();
+
+        assertEquals("myGame", gameName);
+    }
+
+    @Test
+    public void createGameNegativeTest() throws Exception {
+        game.createGame(gameData);
+
+        assertThrows(DataAccessException.class, () -> {
+            game.createGame(gameData);
+        });
+    }
+
+    @Test
+    public void getGamePositiveTest() throws Exception {
+        game.createGame(gameData);
+        GameData myData = game.getGame(1);
+
+        assertEquals(gameData, myData);
+    }
+
+    @Test
+    public void getGameNegativeTest() throws Exception {
+        assertThrows(DataAccessException.class, () -> {
+            game.getGame(1);
+        });
+    }
+
+    @Test
+    public void listGamesPositiveTest() throws Exception {
+        game.createGame(gameData);
+        gameData = new GameData(2, "white2", "black2", "myGame2", new ChessGame());
+        game.createGame(gameData);
+        Collection<GameData> myList = game.listGames();
+
+        assertEquals(2, myList.size());
+    }
+
+    @Test
+    public void listGamesNegativeTest() throws Exception {
+        Collection<GameData> myList = game.listGames();
+
+        assertEquals(0, myList.size());
+    }
+
+    @Test
+    public void updateGamePositiveTest() throws Exception {
+        game.createGame(gameData);
+        gameData = new GameData(1, "white2", "black2", "myGame2", new ChessGame());
+        game.updateGame(1, gameData);
+
+        assertEquals("white2", game.getGame(1).whiteUsername());
+    }
+
+    @Test
+    public void updateGameNegativeTest() throws Exception {
+        game.createGame(gameData);
+        assertThrows(DataAccessException.class, () -> {
+            game.updateGame(2, gameData);
+        });
+    }
+
+    @Test
+    public void clearGamePositiveTest() throws Exception {
+        game.createGame(gameData);
+        game.clear();
+
+        assertThrows(DataAccessException.class, () -> {
+            game.getGame(1);
         });
     }
 }

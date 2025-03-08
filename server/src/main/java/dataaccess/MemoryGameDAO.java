@@ -8,17 +8,14 @@ import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
     Map<Integer, GameData> allGames;
-    private int nextID = 1;
 
     public MemoryGameDAO() {
         allGames = new HashMap<>();
     }
 
     @Override
-    public int createGame(String gameName) {
-        int gameID = nextID++;
-        allGames.put(gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
-        return gameID;
+    public void createGame(GameData gameData) {
+        allGames.put(gameData.gameID(), gameData);
     }
 
     @Override

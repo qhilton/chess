@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryGameDAO;
@@ -13,6 +14,7 @@ import java.util.Collection;
 public class GameService {
     MemoryGameDAO game = new MemoryGameDAO();
     MemoryAuthDAO auth = new MemoryAuthDAO();
+    private int nextID = 1;
 
     public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest, UserService userService) throws DataAccessException {
         if (authToken == null) {
@@ -26,7 +28,8 @@ public class GameService {
             throw new DataAccessException("Unauthorized create request");
         }
 
-        int gameID = game.createGame(createGameRequest.gameName());
+        int gameID = nextID++;
+        game.createGame(new GameData(gameID, null, null, createGameRequest.gameName(), new ChessGame()));
 
         return new CreateGameResult(gameID);
     }

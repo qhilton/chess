@@ -15,10 +15,6 @@ public class UserService {
     SQLUserDAO user; //change to SQLUserDAO
     SQLAuthDAO auth; //change to SQLAuthDAO
 
-//    public UserService() throws ResponseException, DataAccessException {
-//        user = new SQLUserDAO();
-//        auth = new SQLAuthDAO();
-//    }
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ResponseException {
         init();
@@ -46,10 +42,6 @@ public class UserService {
         auth.clear();
     }
 
-//    public SQLUserDAO getUserDAO() {
-//        return user;
-//    }
-//
     public SQLAuthDAO getAuthDAO() {
         return auth;
     }
@@ -59,7 +51,6 @@ public class UserService {
 
         String username = loginRequest.username();
         String password = loginRequest.password();
-        //var hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         if (username == null || password == null) {
             throw new DataAccessException("Bad request");
         }

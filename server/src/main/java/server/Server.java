@@ -10,11 +10,6 @@ public class Server {
     UserHandler userHandler = new UserHandler();
     GameHandler gameHandler = new GameHandler();
 
-//    public Server() throws ResponseException, DataAccessException {
-//        userHandler = new UserHandler();
-//        gameHandler = new GameHandler();
-//    }
-
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 

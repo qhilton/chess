@@ -114,7 +114,7 @@ public class ServiceUnitTests {
         LoginResult loginResult = userService.login(loginRequest);
 
         CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
-        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest);
 
         assertTrue(createGameResult.gameID() > 0);
     }
@@ -129,7 +129,7 @@ public class ServiceUnitTests {
         CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+            gameService.createGame(loginResult.authToken(), createGameRequest);
         });
     }
 
@@ -139,9 +139,9 @@ public class ServiceUnitTests {
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
-        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest);
         JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
-        gameService.joinGame(loginResult.authToken(), joinGameRequest, userService);
+        gameService.joinGame(loginResult.authToken(), joinGameRequest);
 
         assertTrue(createGameResult.gameID() > 0);
     }
@@ -152,16 +152,16 @@ public class ServiceUnitTests {
         LoginRequest loginRequest1 = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult1 = userService.login(loginRequest1);
         CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
-        CreateGameResult createGameResult = gameService.createGame(loginResult1.authToken(), createGameRequest, userService);
+        CreateGameResult createGameResult = gameService.createGame(loginResult1.authToken(), createGameRequest);
         JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
-        gameService.joinGame(loginResult1.authToken(), joinGameRequest, userService);
+        gameService.joinGame(loginResult1.authToken(), joinGameRequest);
 
         userService.register(new RegisterRequest("otherUserName", "myPassword", "email"));
         LoginRequest loginRequest2 = new LoginRequest("otherUserName", "myPassword");
         LoginResult loginResult2 = userService.login(loginRequest2);
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.joinGame(loginResult2.authToken(), joinGameRequest, userService);
+            gameService.joinGame(loginResult2.authToken(), joinGameRequest);
         });
     }
 
@@ -171,9 +171,9 @@ public class ServiceUnitTests {
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
-        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest, userService);
+        CreateGameResult createGameResult = gameService.createGame(loginResult.authToken(), createGameRequest);
 
-        Collection<GameData> games = (gameService.listGames(loginResult.authToken(), userService));
+        Collection<GameData> games = (gameService.listGames(loginResult.authToken()));
         assertEquals(1, games.size());
         assertNotNull(games);
     }
@@ -184,7 +184,7 @@ public class ServiceUnitTests {
         LoginRequest loginRequest = new LoginRequest("myUserName", "myPassword");
         LoginResult loginResult = userService.login(loginRequest);
 
-        Collection<GameData> games = (gameService.listGames(loginResult.authToken(), userService));
+        Collection<GameData> games = (gameService.listGames(loginResult.authToken()));
         assertEquals(0, games.size());
     }
 

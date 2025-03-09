@@ -14,7 +14,7 @@ public class GameService {
     SQLGameDAO game;
     private int nextID = 1;
 
-    public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest, UserService userService) throws DataAccessException, ResponseException {
+    public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest) throws DataAccessException, ResponseException {
         init();
 
         if (authToken == null) {
@@ -22,7 +22,8 @@ public class GameService {
         }
 
         try {
-            userService.getAuthDAO().getAuth(authToken);
+            SQLAuthDAO auth = new SQLAuthDAO();
+            auth.getAuth(authToken);
         }
         catch (DataAccessException e) {
             throw new DataAccessException("Unauthorized create request");
@@ -34,8 +35,9 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-    public void joinGame(String authToken, JoinGameRequest joinGameRequest, UserService userService) throws DataAccessException, ResponseException {
+    public void joinGame(String authToken, JoinGameRequest joinGameRequest) throws DataAccessException, ResponseException {
         init();
+        SQLAuthDAO auth = new SQLAuthDAO();
 
         GameData currentGame;
         if (authToken == null) {
@@ -49,7 +51,7 @@ public class GameService {
         }
 
         try {
-            userService.getAuthDAO().getAuth(authToken);
+            auth.getAuth(authToken);
         }
         catch (DataAccessException e) {
             throw new DataAccessException("Unauthorized create request");
@@ -64,7 +66,7 @@ public class GameService {
 
         String whiteUserName = currentGame.whiteUsername();
         String blackUserName = currentGame.blackUsername();
-        String username = userService.getAuthDAO().getAuth(authToken).username();
+        String username = auth.getAuth(authToken).username();
 
         if (joinGameRequest.playerColor().equals("WHITE")) {
             if (whiteUserName != null && !currentGame.whiteUsername().equals(username)) {
@@ -83,7 +85,7 @@ public class GameService {
         game.updateGame(joinGameRequest.gameID(), newGame);
     }
 
-    public Collection<GameData> listGames(String authToken, UserService userService) throws DataAccessException, ResponseException {
+    public Collection<GameData> listGames(String authToken) throws DataAccessException, ResponseException {
         init();
 
         if (authToken == null) {
@@ -91,7 +93,6 @@ public class GameService {
         }
 
         try {
-            //userService.getAuthDAO().getAuth(authToken);
             SQLAuthDAO auth = new SQLAuthDAO();
             auth.getAuth(authToken);
 

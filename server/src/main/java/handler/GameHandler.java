@@ -16,19 +16,19 @@ public class GameHandler {
     GameService gameService = new GameService();
     Gson serializer = new Gson();
 
-    public String handleCreateGame(String authToken, String json, UserHandler userHandler) throws DataAccessException, ResponseException {
+    public String handleCreateGame(String authToken, String json) throws DataAccessException, ResponseException {
         var createGameRequest = serializer.fromJson(json, CreateGameRequest.class);
-        CreateGameResult createGameResult = gameService.createGame(authToken, createGameRequest, userHandler.getUserService());
+        CreateGameResult createGameResult = gameService.createGame(authToken, createGameRequest);
         return serializer.toJson(createGameResult);
     }
 
-    public void handleJoinGame(String authToken, String json, UserHandler userHandler) throws DataAccessException, ResponseException {
+    public void handleJoinGame(String authToken, String json) throws DataAccessException, ResponseException {
         JoinGameRequest joinGameRequest = serializer.fromJson(json, JoinGameRequest.class);
-        gameService.joinGame(authToken, joinGameRequest, userHandler.getUserService());
+        gameService.joinGame(authToken, joinGameRequest);
     }
 
-    public String handleListGames(String json, UserHandler userHandler) throws DataAccessException, ResponseException {
-        Collection<GameData> gameData = (gameService.listGames(serializer.fromJson(json, String.class), userHandler.getUserService()));
+    public String handleListGames(String json) throws DataAccessException, ResponseException {
+        Collection<GameData> gameData = (gameService.listGames(serializer.fromJson(json, String.class)));
         ListGamesResult games = new ListGamesResult(gameData);
         return serializer.toJson(games);
     }

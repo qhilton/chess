@@ -93,7 +93,7 @@ public class Server {
     private Object createGame(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
-            var createGame = gameHandler.handleCreateGame(authToken, req.body(), userHandler);
+            var createGame = gameHandler.handleCreateGame(authToken, req.body());
             res.status(200);
             return createGame;
         } catch (Exception e) {
@@ -113,7 +113,7 @@ public class Server {
     private Object joinGame(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
-            gameHandler.handleJoinGame(authToken, req.body(), userHandler);
+            gameHandler.handleJoinGame(authToken, req.body());
             res.status(200);
             return "{}";
         } catch (Exception | ResponseException e) {
@@ -137,7 +137,7 @@ public class Server {
 
     private Object listGames(Request req, Response res) {
         try {
-            var games = gameHandler.handleListGames(req.headers("authorization"), userHandler);
+            var games = gameHandler.handleListGames(req.headers("authorization"));
             res.status(200);
             return games;
         } catch (Exception e) {

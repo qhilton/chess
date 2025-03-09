@@ -7,22 +7,8 @@ import java.sql.*;
 public class SQLUserDAO implements UserDAO {
     private String salt = BCrypt.gensalt();
 
-    public SQLUserDAO() throws ResponseException, DataAccessException {
-        try {
-            DatabaseManager.createDatabase();
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
-        }
+    public SQLUserDAO() throws ResponseException {
+        DAOUtils.initDAO(createStatements);
     }
 
     @Override

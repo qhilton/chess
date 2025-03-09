@@ -6,21 +6,7 @@ import java.sql.SQLException;
 
 public class SQLAuthDAO implements AuthDAO {
     public SQLAuthDAO() throws ResponseException, DataAccessException {
-        try {
-            DatabaseManager.createDatabase();
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
-        }
+        DAOUtils.initDAO(createStatements);
     }
 
     public void createAuth(AuthData authData) throws DataAccessException {

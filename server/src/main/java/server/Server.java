@@ -68,7 +68,7 @@ public class Server {
             var loginUser = userHandler.handleLogin(req.body());
             res.status(200);
             return loginUser;
-        } catch (Exception e) {
+        } catch (Exception | ResponseException e) {
             if (e.getMessage().contains("Unauthorized") || e.getMessage().contains("not found")) {
                 res.status(401);
                 return "{ \"message\": \"Error: unauthorized\" }";
@@ -84,7 +84,7 @@ public class Server {
             userHandler.handleLogout(req.headers("authorization"));
             res.status(200);
             return "{}";
-        } catch (Exception e) {
+        } catch (Exception | ResponseException e) {
             if (e.getMessage().contains("Unauthorized")) {
                 res.status(401);
                 return "{ \"message\": \"Error: unauthorized\" }";
@@ -121,7 +121,7 @@ public class Server {
             gameHandler.handleJoinGame(authToken, req.body(), userHandler);
             res.status(200);
             return "{}";
-        } catch (Exception e) {
+        } catch (Exception | ResponseException e) {
             if (e.getMessage().contains("Bad request")) {
                 res.status(400);
                 return "{ \"message\": \"Error: bad request\" }";
@@ -151,9 +151,11 @@ public class Server {
                 return "{ \"message\": \"Error: unauthorized\" }";
             }
 
-            res.status(500);
-            return "{ \"message\": \"Error:\" }";
+        } catch (ResponseException e) {
+            e.printStackTrace();
         }
+        res.status(500);
+        return "{ \"message\": \"Error:\" }";
     }
 
     private Object clear(Request req, Response res) {try {

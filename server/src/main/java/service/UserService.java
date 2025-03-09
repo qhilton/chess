@@ -21,8 +21,7 @@ public class UserService {
 //    }
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ResponseException {
-        user = new SQLUserDAO();
-        auth = new SQLAuthDAO();
+        init();
 
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new DataAccessException("Bad request");
@@ -41,12 +40,7 @@ public class UserService {
     }
 
     public void clear() throws ResponseException, DataAccessException {
-        if (user == null) {
-            user = new SQLUserDAO();
-        }
-        if (auth == null) {
-            auth = new SQLAuthDAO();
-        }
+        init();
 
         user.clear();
         auth.clear();
@@ -60,7 +54,9 @@ public class UserService {
         return auth;
     }
 
-    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, ResponseException {
+        init();
+
         String username = loginRequest.username();
         String password = loginRequest.password();
         //var hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -76,7 +72,9 @@ public class UserService {
         return new LoginResult(username, authToken);
     }
 
-    public void logout(String authToken) throws DataAccessException {
+    public void logout(String authToken) throws DataAccessException, ResponseException {
+        init();
+
         if (authToken == null) {
             throw new DataAccessException("Unauthorized logout request");
         }
@@ -89,8 +87,14 @@ public class UserService {
         }
 
         auth.deleteAuth(authToken);
+    }
 
-
-
+    private void init() throws ResponseException, DataAccessException {
+        if (user == null) {
+            user = new SQLUserDAO();
+        }
+        if (auth == null) {
+            auth = new SQLAuthDAO();
+        }
     }
 }

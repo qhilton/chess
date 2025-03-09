@@ -22,12 +22,12 @@ public class GameHandler {
         return serializer.toJson(createGameResult);
     }
 
-    public void handleJoinGame(String authToken, String json, UserHandler userHandler) throws DataAccessException {
+    public void handleJoinGame(String authToken, String json, UserHandler userHandler) throws DataAccessException, ResponseException {
         JoinGameRequest joinGameRequest = serializer.fromJson(json, JoinGameRequest.class);
         gameService.joinGame(authToken, joinGameRequest, userHandler.getUserService());
     }
 
-    public String handleListGames(String json, UserHandler userHandler) throws DataAccessException {
+    public String handleListGames(String json, UserHandler userHandler) throws DataAccessException, ResponseException {
         Collection<GameData> gameData = (gameService.listGames(serializer.fromJson(json, String.class), userHandler.getUserService()));
         ListGamesResult games = new ListGamesResult(gameData);
         return serializer.toJson(games);

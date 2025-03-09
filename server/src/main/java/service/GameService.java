@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import model.AuthData;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
@@ -14,7 +15,7 @@ public class GameService {
     private int nextID = 1;
 
     public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest, UserService userService) throws DataAccessException, ResponseException {
-        game = new SQLGameDAO();
+        init();
 
         if (authToken == null) {
             throw new DataAccessException("Unauthorized create request");
@@ -33,7 +34,9 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-    public void joinGame(String authToken, JoinGameRequest joinGameRequest, UserService userService) throws DataAccessException {
+    public void joinGame(String authToken, JoinGameRequest joinGameRequest, UserService userService) throws DataAccessException, ResponseException {
+        init();
+
         GameData currentGame;
         if (authToken == null) {
             throw new DataAccessException("Unauthorized create request");
@@ -80,16 +83,23 @@ public class GameService {
         game.updateGame(joinGameRequest.gameID(), newGame);
     }
 
-    public Collection<GameData> listGames(String authToken, UserService userService) throws DataAccessException {
+    public Collection<GameData> listGames(String authToken, UserService userService) throws DataAccessException, ResponseException {
+        init();
+
         if (authToken == null) {
             throw new DataAccessException("Unauthorized logout request");
         }
 
         try {
-            userService.getAuthDAO().getAuth(authToken);
+            //userService.getAuthDAO().getAuth(authToken);
+            SQLAuthDAO auth = new SQLAuthDAO();
+            auth.getAuth(authToken);
+
         }
         catch (DataAccessException e) {
             throw new DataAccessException("Unauthorized logout request");
+        } catch (ResponseException e) {
+            e.printStackTrace();
         }
 
         return game.listGames();
@@ -97,10 +107,14 @@ public class GameService {
     }
 
     public void clear() throws ResponseException, DataAccessException {
+        init();
+
+        game.clear();
+    }
+
+    private void init() throws ResponseException, DataAccessException {
         if (game == null) {
             game = new SQLGameDAO();
         }
-
-        game.clear();
     }
 }

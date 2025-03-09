@@ -19,13 +19,13 @@ public class UserHandler {
         return serializer.toJson(registerResult);
     }
 
-    public String handleLogin(String json) throws DataAccessException {
+    public String handleLogin(String json) throws DataAccessException, ResponseException {
         LoginRequest loginRequest = serializer.fromJson(json, LoginRequest.class);
         LoginResult loginResult = userService.login(loginRequest);
         return serializer.toJson(loginResult);
     }
 
-    public void handleLogout(String json) throws DataAccessException {
+    public void handleLogout(String json) throws DataAccessException, ResponseException {
         userService.logout(serializer.fromJson(json, String.class));
     }
 

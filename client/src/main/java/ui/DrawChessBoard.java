@@ -57,24 +57,17 @@ public class DrawChessBoard {
 
         if (teamColor == ChessGame.TeamColor.WHITE) {
             out.print(" " + (row) + " ");
-
-            for (int col = 1; col < 9; col++) {
-                drawCol(out, row, col);
-            }
-
-            setBorder(out);
-            out.print(" " + (row) + " ");
         } else {
             row = fixRow(row);
             out.print(" " + (row) + " ");
-
-            for (int col = 1; col < 9; col++) {
-                drawCol(out, row, col);
-            }
-
-            setBorder(out);
-            out.print(" " + (row) + " ");
         }
+
+        for (int col = 1; col < 9; col++) {
+            drawCol(out, row, col);
+        }
+
+        setBorder(out);
+        out.print(" " + (row) + " ");
 
         out.print(RESET_BG_COLOR);
         out.println();

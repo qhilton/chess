@@ -11,20 +11,22 @@ import java.util.Random;
 import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
-    private static final int BOARD_SIZE_IN_SQUARES = 10;
-
-    private static Random rand = new Random();
-
     private static ChessGame game = new ChessGame();
 
     public static void main(String[] args) {
+        drawChessBoard();
+    }
+
+    private static void drawChessBoard() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
 
         drawHeaders(out);
 
-        drawChessBoard(out);
+        for (int boardRow = 8; boardRow > 0; boardRow--) {
+            drawRow(out, boardRow);
+        }
 
         drawHeaders(out);
 
@@ -34,7 +36,7 @@ public class DrawChessBoard {
 
     private static void drawHeaders(PrintStream out) {
         String[] headers = { "   ", " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", "   " };
-        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
+        for (int boardCol = 0; boardCol < 10; boardCol++) {
             drawHeader(out, headers[boardCol]);
         }
 
@@ -50,12 +52,6 @@ public class DrawChessBoard {
 
     private static void printHeaderText(PrintStream out, String player) {
         out.print(player);
-    }
-
-    private static void drawChessBoard(PrintStream out) {
-        for (int boardRow = 8; boardRow > 0; boardRow--) {
-            drawRow(out, boardRow);
-        }
     }
 
     private static void drawRow(PrintStream out, int row) {

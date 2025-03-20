@@ -105,8 +105,6 @@ u
 Eshared/src/main/java/chess/movescalculator/KnightMovesCalculator.java,a\8\a8f8089a3d2c15445a1556c80c5d67db1f7cf624
 u
 Eshared/src/main/java/chess/movescalculator/BishopMovesCalculator.java,d\f\dfac4fd5464fdea41697de6d4b8826538ccbf18e
-a
-1server/src/test/java/service/ServerUnitTests.java,c\1\c12a6cd8560752b682a5cedb1f960e94d8b79df1
 s
 Cshared/src/main/java/chess/movescalculator/KingMovesCalculator.java,6\1\61789e97f833c254f06fd6720b318c427fba97fe
 ]
@@ -133,3 +131,9 @@ b
 2server/src/main/java/dataaccess/MemoryUserDAO.java,0\7\07c8e87dfa1f0641556e5d98b5a66011b7b29e80
 _
 /server/src/main/java/dataaccess/SQLAuthDAO.java,9\6\96aa09531c162dded1a6431a8ea71e9b3bc3cf32
+b
+2server/src/test/java/service/ServiceUnitTests.java,a\0\a09e8d2995164a36bd42d6095adfb530232d9131
+]
+-server/src/main/java/dataaccess/DAOUtils.java,5\2\52c4cac00fa4651045d3dc3c9b382bb350ec34da
+_
+/server/src/main/java/dataaccess/SQLGameDAO.java,1\0\104cf004342c318954f87f8aa998f5be26fd7d4d

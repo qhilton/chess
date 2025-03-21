@@ -137,3 +137,13 @@ b
 -server/src/main/java/dataaccess/DAOUtils.java,5\2\52c4cac00fa4651045d3dc3c9b382bb350ec34da
 _
 /server/src/main/java/dataaccess/SQLGameDAO.java,1\0\104cf004342c318954f87f8aa998f5be26fd7d4d
+\
+,client/src/main/java/ui/EscapeSequences.java,b\6\b6823e781e53d487887c1ba9760d63892cdd044c
+A
+client/client.iml,0\2\022fd7ad3cac7d492229d5142f7207b87826a366
+b
+2client/src/test/java/client/ServerFacadeTests.java,e\6\e6826acb161285e1dab795e5cfe93be0d16ca8b4
+[
++client/src/main/java/ui/DrawChessBoard.java,6\e\6ea3244ecdb791f2044fbd27c221fb7ff3295c74
+S
+#client/src/main/java/ui/Client.java,6\0\6041ca5632fd8d831928a845e635824f8316952b

@@ -13,10 +13,11 @@ public class DrawChessBoard {
     private static ChessGame game = new ChessGame();
 
     public static void main(String[] args) {
+        drawChessBoard(ChessGame.TeamColor.WHITE);
         drawChessBoard(ChessGame.TeamColor.BLACK);
     }
 
-    private static void drawChessBoard(ChessGame.TeamColor teamColor) {
+    public static void drawChessBoard(ChessGame.TeamColor teamColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
@@ -28,8 +29,8 @@ public class DrawChessBoard {
 
         drawHeaders(out, teamColor);
 
-        out.print(SET_BG_COLOR_LIGHT_GREY);
-        out.print(SET_TEXT_COLOR_WHITE);
+//        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(RESET_TEXT_COLOR);
     }
 
     private static void drawHeaders(PrintStream out, ChessGame.TeamColor teamColor) {

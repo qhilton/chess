@@ -75,13 +75,19 @@ public class Client {
 
         //call registration
         RegisterResult result = server.register(new RegisterRequest(username, password, email));
-        if (result.authToken() != null) {
+        if (result.authToken() != "") {
             System.out.println("Successfully registered " + username);
             menu = "auth";
         }
 
         else {
-            System.out.println("Invalid input. Please try again.");
+            if (result.username().equals("403")) {
+                System.out.println("User already exists. Please try again.");
+            } else if (result.username().equals("401")) {
+                System.out.println("Invalid input. Please try again.");
+            } else {
+                System.out.println("Unexpected error. Please try again.");
+            }
         }
     }
 

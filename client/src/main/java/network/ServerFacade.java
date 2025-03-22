@@ -21,7 +21,20 @@ public class ServerFacade {
 //    }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException, IOException {
-        return clientCommunicator.register(request);
+        try {
+            RegisterResult result = clientCommunicator.register(request);
+            return result;
+        } catch (ResponseException e) {
+            if (e.StatusCode() == 401) {
+                return new RegisterResult("401", "");
+            } else if (e.StatusCode() == 403) {
+                return new RegisterResult("403", "");
+            } else {
+                return new RegisterResult("500", "");
+            }
+        }
+
+        //return clientCommunicator.register(request);
         //return new RegisterResult("a", "a");
     }
 }

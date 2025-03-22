@@ -47,6 +47,13 @@ public class ClientCommunicator {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
+//            String message = throwIfNotSuccessful(http);
+//            if (message.contains("Success")) {
+//                return readBody(http, responseClass);
+//            } else {
+//                return new Gson().fromJson(message, responseClass);
+//                return new T(message, "");
+//            }
         } catch (ResponseException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -65,19 +72,22 @@ public class ClientCommunicator {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+    private String throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
                     throw ResponseException.fromJson(status, respErr);
                     //throw new ResponseException(status, respErr.toString());
+                    //return ResponseException.fromJson(respErr);
 
                 }
             }
 
-            throw new ResponseException(status, "other failure: " + status);
+            //throw new ResponseException(status, "other failure: " + status);
+
         }
+        return ("Success");
     }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {

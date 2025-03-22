@@ -22,6 +22,9 @@ public class UserService {
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new DataAccessException("Bad request");
         }
+        if (registerRequest.username() == "" || registerRequest.password() == "" || registerRequest.email() == "") {
+            throw new DataAccessException("Bad request");
+        }
 
         String authToken = UUID.randomUUID().toString();
         try {

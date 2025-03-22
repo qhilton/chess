@@ -1,5 +1,7 @@
 package dataaccess;
 
+import execption.ResponseException;
+
 import java.sql.SQLException;
 
 public class DAOUtils {

@@ -12,10 +12,10 @@ import static ui.EscapeSequences.*;
 public class DrawChessBoard {
     private static ChessGame game = new ChessGame();
 
-    public static void main(String[] args) {
-        drawChessBoard(ChessGame.TeamColor.WHITE);
-        drawChessBoard(ChessGame.TeamColor.BLACK);
-    }
+//    public static void main(String[] args) {
+//        drawChessBoard(ChessGame.TeamColor.WHITE);
+//        drawChessBoard(ChessGame.TeamColor.BLACK);
+//    }
 
     public static void drawChessBoard(ChessGame.TeamColor teamColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
@@ -29,7 +29,6 @@ public class DrawChessBoard {
 
         drawHeaders(out, teamColor);
 
-//        out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(RESET_TEXT_COLOR);
     }
 

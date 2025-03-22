@@ -1,7 +1,6 @@
 package server;
 
-import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
+import execption.ResponseException;
 import handler.GameHandler;
 import handler.UserHandler;
 import spark.*;

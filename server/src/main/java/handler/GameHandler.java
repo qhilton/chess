@@ -2,7 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
+import execption.ResponseException;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;

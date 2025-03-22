@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import execption.ResponseException;
 import model.GameData;
 
 import java.sql.SQLException;

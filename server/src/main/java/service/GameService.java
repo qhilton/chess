@@ -2,7 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
-import model.AuthData;
+import execption.ResponseException;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;

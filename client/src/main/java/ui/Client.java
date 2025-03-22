@@ -2,19 +2,29 @@ package ui;
 
 
 import chess.ChessGame;
+import execption.ResponseException;
+import network.ServerFacade;
+import request.RegisterRequest;
+import result.RegisterResult;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Client {
     static Scanner scanner = new Scanner(System.in);
     static boolean loop = true;
-    //static String result = "";
     static String menu = "";
+    static String serverUrl = "http://localhost:8080/";
+    static ServerFacade server;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ResponseException {
+        if (args.length == 1) {
+            serverUrl = args[0];
+        }
+        server = new ServerFacade(serverUrl);
+
         System.out.println("Welcome to Chess!");
         menu = "unauth";
-//        unauthorizedMenu();
         while (loop) {
             switch (menu) {
                 case ("unauth"):
@@ -31,7 +41,7 @@ public class Client {
     }
 
 
-    private static void unauthorizedMenu() {
+    private static void unauthorizedMenu() throws ResponseException, IOException {
         System.out.println("\nOptions");
         System.out.println("1. Register");
         System.out.println("2. Login");
@@ -54,7 +64,7 @@ public class Client {
         }
     }
 
-    private static void register() {
+    private static void register() throws ResponseException, IOException {
         System.out.println("Registering new user");
         System.out.println("Enter username");
         String username = scanner.nextLine();
@@ -64,9 +74,15 @@ public class Client {
         String email = scanner.nextLine();
 
         //call registration
+        RegisterResult result = server.register(new RegisterRequest(username, password, email));
+        if (result.authToken() != null) {
+            System.out.println("Successfully registered " + username);
+            menu = "auth";
+        }
 
-        System.out.println("Successfully registered " + username);
-        menu = "auth";
+        else {
+            System.out.println("Invalid input. Please try again.");
+        }
     }
 
     private static void login() {
@@ -83,9 +99,6 @@ public class Client {
     }
 
     private static void authorizedMenu() {
-        //System.out.println("Auth");
-        //loop = false;
-
         System.out.println("\nOptions");
         System.out.println("1. Create Game");
         System.out.println("2. Play Game");

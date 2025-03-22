@@ -22,7 +22,7 @@ public class UserService {
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new DataAccessException("Bad request");
         }
-        if (registerRequest.username() == "" || registerRequest.password() == "" || registerRequest.email() == "") {
+        if (registerRequest.username().equals("") || registerRequest.password().equals("") || registerRequest.email().equals("")) {
             throw new DataAccessException("Bad request");
         }
 

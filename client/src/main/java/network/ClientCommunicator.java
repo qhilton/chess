@@ -2,7 +2,9 @@ package network;
 
 import com.google.gson.Gson;
 import execption.ResponseException;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 
 import java.io.IOException;
@@ -29,8 +31,12 @@ public class ClientCommunicator {
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
         var path = "/user";
-        //return new RegisterResult("a", "a");
         return this.makeRequest("POST", path, request, RegisterResult.class);
+    }
+
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        var path = "/session";
+        return this.makeRequest("POST", path, request, LoginResult.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -39,9 +45,9 @@ public class ClientCommunicator {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-            if (method.equals("POST")) {
-                http.addRequestProperty("Accept", "text/html");
-            }
+//            if (method.equals("POST")) {
+//                http.addRequestProperty("Accept", "text/html");
+//            }
 
             writeBody(request, http);
             http.connect();

@@ -56,7 +56,7 @@ public class ServerFacadeTests {
 
     @Test
     public void negativeRegisterTest() throws ResponseException, IOException {
-        RegisterRequest registerRequest = new RegisterRequest(null, "myPassword", "myEmail");
+        RegisterRequest registerRequest = new RegisterRequest("", "myPassword", "myEmail");
         Assertions.assertTrue(facade.register(registerRequest).authToken().equals(""));
     }
 

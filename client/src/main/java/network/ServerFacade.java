@@ -1,7 +1,9 @@
 package network;
 
 import execption.ResponseException;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 
 import java.io.IOException;
@@ -36,5 +38,18 @@ public class ServerFacade {
 
         //return clientCommunicator.register(request);
         //return new RegisterResult("a", "a");
+    }
+
+    public LoginResult login(LoginRequest request) {
+        try {
+            LoginResult result = clientCommunicator.login(request);
+            return result;
+        } catch (ResponseException e) {
+            if (e.StatusCode() == 401) {
+                return new LoginResult("401", "");
+            } else {
+                return new LoginResult("500", "");
+            }
+        }
     }
 }

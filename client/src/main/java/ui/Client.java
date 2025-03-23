@@ -4,7 +4,9 @@ package ui;
 import chess.ChessGame;
 import execption.ResponseException;
 import network.ServerFacade;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 
 import java.io.IOException;
@@ -78,9 +80,7 @@ public class Client {
         if (result.authToken() != "") {
             System.out.println("Successfully registered " + username);
             menu = "auth";
-        }
-
-        else {
+        } else {
             if (result.username().equals("403")) {
                 System.out.println("User already exists. Please try again.");
             } else if (result.username().equals("401")) {
@@ -99,9 +99,17 @@ public class Client {
         String password = scanner.nextLine();
 
         //call login
-
-        System.out.println("Successfully logged in " + username);
-        menu = "auth";
+        LoginResult result = server.login(new LoginRequest(username, password));
+        if (result.authToken() != "") {
+            System.out.println("Successfully logged in " + username);
+            menu = "auth";
+        } else {
+            if (result.username().equals("401")) {
+                System.out.println("Invalid input. Please try again.");
+            } else {
+                System.out.println("Unexpected error. Please try again.");
+            }
+        }
     }
 
     private static void authorizedMenu() {

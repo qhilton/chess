@@ -108,4 +108,12 @@ public class ServerFacadeTests {
         Assertions.assertTrue(result.gameID() != 500);
     }
 
+    @Test
+    public void negativeCreateGameTest() throws ResponseException, IOException {
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        CreateGameResult result = facade.createGame(createGameRequest, "");
+
+        Assertions.assertTrue(result.gameID() == 401);
+    }
+
 }

@@ -65,8 +65,10 @@ public class ServerFacadeTests {
 
     @Test
     public void positiveLoginTest() throws ResponseException, IOException {
+        RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
         LoginRequest loginRequest = new LoginRequest("myUsername", "myPassword");
-        facade.login(loginRequest); // change to logout
+        String authToken = facade.register(registerRequest).authToken();
+        facade.logout(new LogoutRequest(authToken)); // change to logout
         Assertions.assertTrue(!facade.login(loginRequest).authToken().equals(""));
     }
 

@@ -7,9 +7,11 @@ import dataaccess.SQLUserDAO;
 import execption.ResponseException;
 import network.ServerFacade;
 import org.junit.jupiter.api.*;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.LogoutResult;
 import server.Server;
 
@@ -92,6 +94,18 @@ public class ServerFacadeTests {
     public void negativeLogoutTest() throws ResponseException, IOException {
         LogoutRequest logoutRequest = new LogoutRequest("");
         Assertions.assertTrue(facade.logout(logoutRequest).status() == 401);
+    }
+
+    @Test
+    public void positiveCreateGameTest() throws ResponseException, IOException {
+        RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
+        String authToken = facade.register(registerRequest).authToken();
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        CreateGameResult result = facade.createGame(createGameRequest, authToken);
+
+        Assertions.assertTrue(result.gameID() != 401);
+        Assertions.assertTrue(result.gameID() != 500);
     }
 
 }

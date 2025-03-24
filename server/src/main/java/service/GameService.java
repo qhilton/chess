@@ -30,6 +30,9 @@ public class GameService {
         }
 
         int gameID = nextID++;
+        if(gameID == 200 || gameID == 401 || gameID == 500) {
+            gameID = nextID++;
+        }
         game.createGame(new GameData(gameID, null, null, createGameRequest.gameName(), new ChessGame()));
 
         return new CreateGameResult(gameID);

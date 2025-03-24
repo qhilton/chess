@@ -1,9 +1,11 @@
 package network;
 
 import execption.ResponseException;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.LoginResult;
 import result.LogoutResult;
 import result.RegisterResult;
@@ -20,14 +22,9 @@ public class ServerFacade {
         clientCommunicator = new ClientCommunicator(serverUrl);
     }
 
-//    public String getURL() {
-//        return serverUrl;
-//    }
-
     public RegisterResult register(RegisterRequest request) throws ResponseException, IOException {
         try {
-            RegisterResult result = clientCommunicator.register(request);
-            return result;
+            return clientCommunicator.register(request);
         } catch (ResponseException e) {
             if (e.StatusCode() == 401) {
                 return new RegisterResult("401", "");
@@ -37,15 +34,11 @@ public class ServerFacade {
                 return new RegisterResult("500", "");
             }
         }
-
-        //return clientCommunicator.register(request);
-        //return new RegisterResult("a", "a");
     }
 
     public LoginResult login(LoginRequest request) {
         try {
-            LoginResult result = clientCommunicator.login(request);
-            return result;
+            return clientCommunicator.login(request);
         } catch (ResponseException e) {
             if (e.StatusCode() == 401) {
                 return new LoginResult("401", "");
@@ -57,15 +50,23 @@ public class ServerFacade {
 
     public LogoutResult logout(LogoutRequest request) {
         try {
-            //LogoutResult result = clientCommunicator.logout(request);
             return clientCommunicator.logout(request);
         } catch (ResponseException e) {
-//            if (e.StatusCode() == 401) {
-//                return new LoginResult("401", "");
-//            } else {
+            return new LogoutResult(e.StatusCode());
+        }
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) {
+        try {
+            //LogoutResult result = clientCommunicator.logout(request);
+            return clientCommunicator.createGame(request, authToken);
+        } catch (ResponseException e) {
+            if (e.StatusCode() == 401) {
+                return new CreateGameResult(401);
+            }// else {
 //                return new LoginResult("500", "");
 //            }
-            return new LogoutResult(e.StatusCode());
+            return new CreateGameResult(e.StatusCode());
         }
     }
 }

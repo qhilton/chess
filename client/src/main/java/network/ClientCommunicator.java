@@ -2,9 +2,11 @@ package network;
 
 import com.google.gson.Gson;
 import execption.ResponseException;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.LoginResult;
 import result.LogoutResult;
 import result.RegisterResult;
@@ -23,12 +25,14 @@ public class ClientCommunicator {
     URL url;
     String serverUrl;
     Gson serializer;
+    String authToken;
 
     public ClientCommunicator(String urlString) throws MalformedURLException {
         //this.url = url.toURL();
         serverUrl = urlString;
         url = new URL(urlString);
         serializer = new Gson();
+        authToken = new String();
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
@@ -43,7 +47,14 @@ public class ClientCommunicator {
 
     public LogoutResult logout(LogoutRequest request) throws ResponseException {
         var path = "/session";
+        this.authToken = request.authToken();
         return this.makeRequest("DELETE", path, request, LogoutResult.class);
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException {
+        var path = "/game";
+        this.authToken = authToken;
+        return this.makeRequest("POST", path, request, CreateGameResult.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
@@ -55,13 +66,18 @@ public class ClientCommunicator {
 //            if (method.equals("POST")) {
 //                http.addRequestProperty("Accept", "text/html");
 //            }
-            if (method.equals("DELETE")) {
-                //request.getClass()
-                if (request instanceof LogoutRequest) {
-                    LogoutRequest logoutRequest = (LogoutRequest) request;
-                    http.setRequestProperty("Authorization", new Gson().toJson(logoutRequest.authToken()));
-                }
+            if (request instanceof LogoutRequest) {
+                http.setRequestProperty("Authorization", new Gson().toJson(authToken));
+            } else {
+                http.setRequestProperty("Authorization", authToken);
             }
+//            if (method.equals("DELETE")) {
+//                //request.getClass()
+//                if (request instanceof LogoutRequest) {
+//                    LogoutRequest logoutRequest = (LogoutRequest) request;
+//                    http.setRequestProperty("Authorization", new Gson().toJson(authToken));
+//                }
+//            }
             //else {
 //                writeBody(request, http);
 //            }

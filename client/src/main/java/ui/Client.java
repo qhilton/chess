@@ -4,9 +4,11 @@ package ui;
 import chess.ChessGame;
 import execption.ResponseException;
 import network.ServerFacade;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.LoginResult;
 import result.LogoutResult;
 import result.RegisterResult;
@@ -153,8 +155,14 @@ public class Client {
         String gameName = scanner.nextLine();
 
         //call createGame
-
-        System.out.println("Successfully created new game " + gameName);
+        CreateGameResult result = server.createGame(new CreateGameRequest(gameName), authToken);
+        if (result.gameID() == 401) {
+            System.out.println("Unauthorized request. Please try again.");
+        } else if (result.gameID() == 500) {
+            System.out.println("Unexpected error. Please try again.");
+        } else {
+            System.out.println("Successfully created new game " + gameName);
+        }
     }
 
     private static void playGame() {

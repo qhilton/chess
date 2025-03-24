@@ -88,4 +88,10 @@ public class ServerFacadeTests {
         Assertions.assertTrue(result.status() == 0);
     }
 
+    @Test
+    public void negativeLogoutTest() throws ResponseException, IOException {
+        LogoutRequest logoutRequest = new LogoutRequest("");
+        Assertions.assertTrue(facade.logout(logoutRequest).status() == 401);
+    }
+
 }

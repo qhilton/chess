@@ -5,6 +5,7 @@ import dataaccess.SQLAuthDAO;
 import dataaccess.SQLGameDAO;
 import dataaccess.SQLUserDAO;
 import execption.ResponseException;
+import model.GameData;
 import network.ServerFacade;
 import org.junit.jupiter.api.*;
 import request.CreateGameRequest;
@@ -12,11 +13,13 @@ import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import result.LogoutResult;
 import server.Server;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 
 public class ServerFacadeTests {
@@ -114,6 +117,28 @@ public class ServerFacadeTests {
         CreateGameResult result = facade.createGame(createGameRequest, "");
 
         Assertions.assertTrue(result.gameID() == 401);
+    }
+
+    @Test
+    public void positiveListGamesTest() throws ResponseException, IOException {
+        RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
+        String authToken = facade.register(registerRequest).authToken();
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        facade.createGame(createGameRequest, authToken);
+        ListGamesResult result = facade.listGames(authToken);
+        ArrayList<GameData> data = (ArrayList) result.games();
+
+        Assertions.assertTrue(data.get(0).gameID() != 401);
+        Assertions.assertTrue(data.get(0).gameID() == 1);
+    }
+
+    @Test
+    public void negativeListGamesTest() throws ResponseException, IOException {
+        ListGamesResult result = facade.listGames("");
+        ArrayList<GameData> data = (ArrayList) result.games();
+
+        Assertions.assertTrue(data.get(0).gameID() == 401);
     }
 
 }

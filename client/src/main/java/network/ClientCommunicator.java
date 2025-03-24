@@ -3,8 +3,10 @@ package network;
 import com.google.gson.Gson;
 import execption.ResponseException;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
+import result.LogoutResult;
 import result.RegisterResult;
 
 import java.io.IOException;
@@ -39,6 +41,11 @@ public class ClientCommunicator {
         return this.makeRequest("POST", path, request, LoginResult.class);
     }
 
+    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+        var path = "/session";
+        return this.makeRequest("DELETE", path, request, LogoutResult.class);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -48,18 +55,21 @@ public class ClientCommunicator {
 //            if (method.equals("POST")) {
 //                http.addRequestProperty("Accept", "text/html");
 //            }
+            if (method.equals("DELETE")) {
+                //request.getClass()
+                if (request instanceof LogoutRequest) {
+                    LogoutRequest logoutRequest = (LogoutRequest) request;
+                    http.setRequestProperty("Authorization", new Gson().toJson(logoutRequest.authToken()));
+                }
+            }
+            //else {
+//                writeBody(request, http);
+//            }
 
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
-//            String message = throwIfNotSuccessful(http);
-//            if (message.contains("Success")) {
-//                return readBody(http, responseClass);
-//            } else {
-//                return new Gson().fromJson(message, responseClass);
-//                return new T(message, "");
-//            }
         } catch (ResponseException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -84,16 +94,11 @@ public class ClientCommunicator {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
                     throw ResponseException.fromJson(status, respErr);
-                    //throw new ResponseException(status, respErr.toString());
-                    //return ResponseException.fromJson(respErr);
 
                 }
             }
-
-            //throw new ResponseException(status, "other failure: " + status);
-
         }
-        return ("Success");
+        return "Success";
     }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {

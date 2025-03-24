@@ -2,8 +2,10 @@ package network;
 
 import execption.ResponseException;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
+import result.LogoutResult;
 import result.RegisterResult;
 
 import java.io.IOException;
@@ -50,6 +52,20 @@ public class ServerFacade {
             } else {
                 return new LoginResult("500", "");
             }
+        }
+    }
+
+    public LogoutResult logout(LogoutRequest request) {
+        try {
+            //LogoutResult result = clientCommunicator.logout(request);
+            return clientCommunicator.logout(request);
+        } catch (ResponseException e) {
+//            if (e.StatusCode() == 401) {
+//                return new LoginResult("401", "");
+//            } else {
+//                return new LoginResult("500", "");
+//            }
+            return new LogoutResult(e.StatusCode());
         }
     }
 }

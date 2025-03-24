@@ -7,7 +7,10 @@ import dataaccess.SQLUserDAO;
 import execption.ResponseException;
 import network.ServerFacade;
 import org.junit.jupiter.api.*;
+import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
+import result.LogoutResult;
 import server.Server;
 
 import java.io.IOException;
@@ -58,6 +61,29 @@ public class ServerFacadeTests {
     public void negativeRegisterTest() throws ResponseException, IOException {
         RegisterRequest registerRequest = new RegisterRequest("", "myPassword", "myEmail");
         Assertions.assertTrue(facade.register(registerRequest).authToken().equals(""));
+    }
+
+    @Test
+    public void positiveLoginTest() throws ResponseException, IOException {
+        LoginRequest loginRequest = new LoginRequest("myUsername", "myPassword");
+        facade.login(loginRequest); // change to logout
+        Assertions.assertTrue(!facade.login(loginRequest).authToken().equals(""));
+    }
+
+    @Test
+    public void negativeLoginTest() throws ResponseException, IOException {
+        LoginRequest loginRequest = new LoginRequest("myUsername", "myPassword");
+        Assertions.assertTrue(facade.login(loginRequest).authToken().equals(""));
+    }
+
+    @Test
+    public void positiveLogoutTest() throws ResponseException, IOException {
+        RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
+        String authToken = facade.register(registerRequest).authToken();
+
+        LogoutRequest logoutRequest = new LogoutRequest(authToken);
+        LogoutResult result = facade.logout(logoutRequest);
+        Assertions.assertTrue(result.status() == 0);
     }
 
 }

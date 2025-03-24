@@ -5,8 +5,10 @@ import chess.ChessGame;
 import execption.ResponseException;
 import network.ServerFacade;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
+import result.LogoutResult;
 import result.RegisterResult;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ public class Client {
     static String menu = "";
     static String serverUrl = "http://localhost:8080/";
     static ServerFacade server;
+    static String authToken;
 
     public static void main(String[] args) throws IOException, ResponseException {
         if (args.length == 1) {
@@ -78,6 +81,7 @@ public class Client {
         //call registration
         RegisterResult result = server.register(new RegisterRequest(username, password, email));
         if (result.authToken() != "") {
+            authToken = result.authToken();
             System.out.println("Successfully registered " + username);
             menu = "auth";
         } else {
@@ -101,6 +105,7 @@ public class Client {
         //call login
         LoginResult result = server.login(new LoginRequest(username, password));
         if (result.authToken() != "") {
+            authToken = result.authToken();
             System.out.println("Successfully logged in " + username);
             menu = "auth";
         } else {
@@ -185,9 +190,18 @@ public class Client {
         System.out.println("Logging out");
 
         //call logout
-
-        System.out.println("Successfully logged out");
-        menu = "unauth";
+        LogoutResult result = server.logout(new LogoutRequest(authToken));
+        if (result.status() == 0) {
+            System.out.println("Successfully logged out");
+            menu = "unauth";
+        }
+        else {
+            if (result.status() == 401) {
+                System.out.println("Unauthorized request. Please try again.");
+            } else {
+                System.out.println("Unexpected error. Please try again.");
+            }
+        }
     }
 
     private static void gamePlayMenu() {

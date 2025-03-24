@@ -6,10 +6,7 @@ import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
-import result.CreateGameResult;
-import result.LoginResult;
-import result.LogoutResult;
-import result.RegisterResult;
+import result.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +54,12 @@ public class ClientCommunicator {
         return this.makeRequest("POST", path, request, CreateGameResult.class);
     }
 
+    public ListGamesResult listGames(String authToken) throws ResponseException {
+        var path = "/game";
+        this.authToken = authToken;
+        return this.makeRequest("GET", path, null, ListGamesResult.class);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -66,7 +69,7 @@ public class ClientCommunicator {
 //            if (method.equals("POST")) {
 //                http.addRequestProperty("Accept", "text/html");
 //            }
-            if (request instanceof LogoutRequest) {
+            if (request != null && request instanceof LogoutRequest) {
                 http.setRequestProperty("Authorization", new Gson().toJson(authToken));
             } else {
                 http.setRequestProperty("Authorization", authToken);
@@ -82,7 +85,9 @@ public class ClientCommunicator {
 //                writeBody(request, http);
 //            }
 
-            writeBody(request, http);
+            if (request != null) {
+                writeBody(request, http);
+            }
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);

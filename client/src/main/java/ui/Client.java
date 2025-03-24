@@ -3,17 +3,16 @@ package ui;
 
 import chess.ChessGame;
 import execption.ResponseException;
+import model.GameData;
 import network.ServerFacade;
 import request.CreateGameRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
-import result.CreateGameResult;
-import result.LoginResult;
-import result.LogoutResult;
-import result.RegisterResult;
+import result.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
@@ -192,6 +191,18 @@ public class Client {
 
         //call listGames
         //print list of games
+        ListGamesResult result = server.listGames(authToken);
+        ArrayList<GameData> data = (ArrayList) result.games();
+        if (data.get(0).gameID() == 401) {
+            System.out.println("Unauthorized request. Please try again.");
+        } else if (data.get(0).gameID() == 500) {
+            System.out.println("Unexpected error. Please try again.");
+        }
+        else {
+            for (int i = 0; i < data.size(); i++) {
+                System.out.println(i+1 + ". " + data.get(i).gameName());
+            }
+        }
     }
 
     private static void logout() {

@@ -5,14 +5,13 @@ import chess.ChessGame;
 import execption.ResponseException;
 import model.GameData;
 import network.ServerFacade;
-import request.CreateGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import result.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Client {
@@ -22,12 +21,15 @@ public class Client {
     static String serverUrl = "http://localhost:8080/";
     static ServerFacade server;
     static String authToken;
+    static ArrayList<GameData> data;
+    static Map<Integer, Integer> gameIDs;
 
     public static void main(String[] args) throws IOException, ResponseException {
         if (args.length == 1) {
             serverUrl = args[0];
         }
         server = new ServerFacade(serverUrl);
+        gameIDs = new HashMap<>();
 
         System.out.println("Welcome to Chess!");
         menu = "unauth";
@@ -165,14 +167,42 @@ public class Client {
     }
 
     private static void playGame() {
+        listGames();
+
         System.out.println("Joining game");
         System.out.println("Enter game ID");
         int gameID = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Enter team color (w/b)");
+        String color = scanner.nextLine();
+        if (color.equals("w")) {
+            color = "WHITE";
+        } else if (color.equals("b")) {
+            color = "BLACK";
+        }
+
+        int idKey = updateGameID(gameID);
 
         //call joinGame
+        LogoutResult result = server.joinGame(new JoinGameRequest(color, gameID), authToken);
 
-        System.out.println("Successfully joined game " + gameID);
-        menu = "game";
+        if (result.status() == 0) {
+            System.out.println("Successfully joined game " + gameIDs.get(idKey));
+            menu = "game";
+        } else {
+            if (result.status() == 400) {
+                System.out.println("Invalid input. Please try again.");
+            } else if (result.status() == 401) {
+                System.out.println("Unauthorized request. Please try again.");
+            } else if (result.status() == 403) {
+                System.out.println("Color already taken. Please try again.");
+            } else {
+                System.out.println("Unexpected error. Please try again.");
+            }
+        }
+
+//        System.out.println("Successfully joined game " + gameID);
+//        menu = "game";
     }
 
     private static void observeGame() {
@@ -192,8 +222,10 @@ public class Client {
         //call listGames
         //print list of games
         ListGamesResult result = server.listGames(authToken);
-        ArrayList<GameData> data = (ArrayList) result.games();
-        if (data.get(0).gameID() == 401) {
+        data = (ArrayList) result.games();
+        if (data.size() == 0) {
+            System.out.println("No games have been created. Create a game and try again.");
+        } else if (data.get(0).gameID() == 401) {
             System.out.println("Unauthorized request. Please try again.");
         } else if (data.get(0).gameID() == 500) {
             System.out.println("Unexpected error. Please try again.");
@@ -201,6 +233,7 @@ public class Client {
         else {
             for (int i = 0; i < data.size(); i++) {
                 System.out.println(i+1 + ". " + data.get(i).gameName());
+                gameIDs.put(i+1, data.get(i).gameID());
             }
         }
     }
@@ -229,6 +262,13 @@ public class Client {
         System.out.println("");
         DrawChessBoard.drawChessBoard(ChessGame.TeamColor.BLACK);
         loop = false;
+    }
+
+    private static int updateGameID(int id) {
+        if (id <= data.size() && id > 0) {
+            return id-1;
+        }
+        return 0;
     }
 }
 

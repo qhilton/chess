@@ -8,10 +8,7 @@ import execption.ResponseException;
 import model.GameData;
 import network.ServerFacade;
 import org.junit.jupiter.api.*;
-import request.CreateGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import result.CreateGameResult;
 import result.ListGamesResult;
 import result.LogoutResult;
@@ -135,10 +132,27 @@ public class ServerFacadeTests {
 
     @Test
     public void negativeListGamesTest() throws ResponseException, IOException {
-        ListGamesResult result = facade.listGames("");
+        RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
+        String authToken = facade.register(registerRequest).authToken();
+
+        ListGamesResult result = facade.listGames(authToken);
         ArrayList<GameData> data = (ArrayList) result.games();
 
         Assertions.assertTrue(data.get(0).gameID() == 401);
+    }
+
+    @Test
+    public void positiveJoinGameTest() throws ResponseException, IOException {
+        RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
+        String authToken = facade.register(registerRequest).authToken();
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        facade.createGame(createGameRequest, authToken);
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
+        LogoutResult result = facade.joinGame(joinGameRequest, authToken);
+        //ArrayList<GameData> data = (ArrayList) result.games();
+
+        Assertions.assertEquals(result.status(), 0);
     }
 
 }

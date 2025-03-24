@@ -2,10 +2,7 @@ package network;
 
 import com.google.gson.Gson;
 import execption.ResponseException;
-import request.CreateGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import result.*;
 
 import java.io.IOException;
@@ -60,6 +57,12 @@ public class ClientCommunicator {
         return this.makeRequest("GET", path, null, ListGamesResult.class);
     }
 
+    public LogoutResult joinGame(JoinGameRequest request, String authToken) throws ResponseException {
+        var path = "/game";
+        this.authToken = authToken;
+        return this.makeRequest("PUT", path, request, LogoutResult.class);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -70,6 +73,9 @@ public class ClientCommunicator {
 //                http.addRequestProperty("Accept", "text/html");
 //            }
             if (request != null && request instanceof LogoutRequest) {
+//                if (request instanceof LogoutRequest || request instanceof JoinGameRequest) {
+//                    http.setRequestProperty("Authorization", new Gson().toJson(authToken));
+//                }
                 http.setRequestProperty("Authorization", new Gson().toJson(authToken));
             } else {
                 http.setRequestProperty("Authorization", authToken);

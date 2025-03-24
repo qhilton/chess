@@ -2,10 +2,7 @@ package network;
 
 import execption.ResponseException;
 import model.GameData;
-import request.CreateGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import result.*;
 
 import java.io.IOException;
@@ -84,6 +81,15 @@ public class ServerFacade {
 //            }
             list.add(new GameData(500, "", "", "", null));
             return new ListGamesResult(list);
+        }
+    }
+
+    public LogoutResult joinGame(JoinGameRequest request, String authToken) {
+        try {
+            LogoutResult result = clientCommunicator.joinGame(request, authToken);
+            return result;
+        } catch (ResponseException e) {
+            return new LogoutResult(e.StatusCode());
         }
     }
 }

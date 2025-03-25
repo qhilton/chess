@@ -69,28 +69,11 @@ public class ClientCommunicator {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-//            if (method.equals("POST")) {
-//                http.addRequestProperty("Accept", "text/html");
-//            }
             if (request != null && request instanceof LogoutRequest) {
-//                if (request instanceof LogoutRequest || request instanceof JoinGameRequest) {
-//                    http.setRequestProperty("Authorization", new Gson().toJson(authToken));
-//                }
                 http.setRequestProperty("Authorization", new Gson().toJson(authToken));
             } else {
                 http.setRequestProperty("Authorization", authToken);
             }
-//            if (method.equals("DELETE")) {
-//                //request.getClass()
-//                if (request instanceof LogoutRequest) {
-//                    LogoutRequest logoutRequest = (LogoutRequest) request;
-//                    http.setRequestProperty("Authorization", new Gson().toJson(authToken));
-//                }
-//            }
-            //else {
-//                writeBody(request, http);
-//            }
-
             if (request != null) {
                 writeBody(request, http);
             }
@@ -145,68 +128,4 @@ public class ClientCommunicator {
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
     }
-
-
-
-
-//    public RegisterResult register(RegisterRequest request) throws IOException {
-////        URL url = new URL(urlString);
-//
-//        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//
-//        connection.setReadTimeout(5000);
-//        connection.setRequestMethod("POST");
-//        connection.setDoOutput(true);
-//
-//        // Set HTTP request headers, if necessary
-//        // connection.addRequestProperty("Accept", "text/html");
-//        connection.addRequestProperty("Content-Type", "application/json");
-//
-//        connection.connect();
-//
-//        try(OutputStream requestBody = connection.getOutputStream();) {
-//            // Write request body to OutputStream ...
-//            if (request != null) {
-//
-//                String reqData = new Gson().toJson(request);
-//                requestBody.write(reqData.getBytes());
-//        }
-//            }
-//
-//            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-//            // Get HTTP response headers, if necessary
-//            // Map<String, List<String>> headers = connection.getHeaderFields();
-//
-//            // OR
-//
-//            //connection.getHeaderField("Content-Length");
-//
-//                InputStream responseBody = connection.getInputStream();
-//            // Read response body from InputStream ...
-////                return new Gson().fromJson(responseBody.toString(), RegisterResult.class);
-//                return readBody(connection, RegisterResult.class);
-//
-//        }
-//        else {
-//            // SERVER RETURNED AN HTTP ERROR
-//
-//            InputStream responseBody = connection.getErrorStream();
-//            // Read and process error response body from InputStream ...
-//        }
-//        connection.disconnect();
-//        return new RegisterResult("a", "a");
-//    }
-//
-//    private static <T> T readBody(HttpURLConnection connection, Class<T> responseClass) throws IOException {
-//        T response = null;
-//        if (connection.getContentLength() < 0) {
-//            try (InputStream respBody = connection.getInputStream()) {
-//                InputStreamReader reader = new InputStreamReader(respBody);
-//                if (responseClass != null) {
-//                    response = new Gson().fromJson(reader, responseClass);
-//                }
-//            }
-//        }
-//        return response;
-//    }
 }

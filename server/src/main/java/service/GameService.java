@@ -112,7 +112,7 @@ public class GameService {
 
     public void clear() throws ResponseException, DataAccessException {
         init();
-
+        nextID = 1;
         game.clear();
     }
 

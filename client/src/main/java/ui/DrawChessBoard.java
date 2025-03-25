@@ -12,11 +12,6 @@ import static ui.EscapeSequences.*;
 public class DrawChessBoard {
     private static ChessGame game = new ChessGame();
 
-//    public static void main(String[] args) {
-//        drawChessBoard(ChessGame.TeamColor.WHITE);
-//        drawChessBoard(ChessGame.TeamColor.BLACK);
-//    }
-
     public static void drawChessBoard(ChessGame.TeamColor teamColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
@@ -57,13 +52,15 @@ public class DrawChessBoard {
 
         if (teamColor == ChessGame.TeamColor.WHITE) {
             out.print(" " + (row) + " ");
+            for (int col = 1; col < 9; col++) {
+                drawCol(out, row, col);
+            }
         } else {
             row = fixRow(row);
             out.print(" " + (row) + " ");
-        }
-
-        for (int col = 1; col < 9; col++) {
-            drawCol(out, row, col);
+            for (int col = 8; col > 0; col--) {
+                drawCol(out, row, col);
+            }
         }
 
         setBorder(out);

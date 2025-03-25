@@ -1,6 +1,5 @@
 package ui;
 
-
 import chess.ChessGame;
 import execption.ResponseException;
 import model.GameData;
@@ -23,6 +22,7 @@ public class Client {
     static String authToken;
     static ArrayList<GameData> data;
     static Map<Integer, Integer> gameIDs;
+    static String playerColor;
 
     public static void main(String[] args) throws IOException, ResponseException {
         if (args.length == 1) {
@@ -81,7 +81,6 @@ public class Client {
         System.out.println("Enter email");
         String email = scanner.nextLine();
 
-        //call registration
         RegisterResult result = server.register(new RegisterRequest(username, password, email));
         if (result.authToken() != "") {
             authToken = result.authToken();
@@ -105,7 +104,6 @@ public class Client {
         System.out.println("Enter password");
         String password = scanner.nextLine();
 
-        //call login
         LoginResult result = server.login(new LoginRequest(username, password));
         if (result.authToken() != "") {
             authToken = result.authToken();
@@ -155,7 +153,6 @@ public class Client {
         System.out.println("Enter game name");
         String gameName = scanner.nextLine();
 
-        //call createGame
         CreateGameResult result = server.createGame(new CreateGameRequest(gameName), authToken);
         if (result.gameID() == 401) {
             System.out.println("Unauthorized request. Please try again.");
@@ -174,53 +171,57 @@ public class Client {
         int gameID = scanner.nextInt();
         scanner.nextLine();
         System.out.println("Enter team color (w/b)");
-        String color = scanner.nextLine();
-        if (color.equals("w")) {
-            color = "WHITE";
-        } else if (color.equals("b")) {
-            color = "BLACK";
+        playerColor = scanner.nextLine();
+        if (playerColor.equals("w")) {
+            playerColor = "WHITE";
+        } else if (playerColor.equals("b")) {
+            playerColor = "BLACK";
         }
 
         int idKey = updateGameID(gameID);
-
-        //call joinGame
-        LogoutResult result = server.joinGame(new JoinGameRequest(color, gameID), authToken);
-
-        if (result.status() == 0) {
-            System.out.println("Successfully joined game " + gameIDs.get(idKey));
-            menu = "game";
-        } else {
-            if (result.status() == 400) {
-                System.out.println("Invalid input. Please try again.");
-            } else if (result.status() == 401) {
-                System.out.println("Unauthorized request. Please try again.");
-            } else if (result.status() == 403) {
-                System.out.println("Color already taken. Please try again.");
+        if (idKey != 500) {
+            LogoutResult result = server.joinGame(new JoinGameRequest(playerColor, gameIDs.get(idKey)), authToken);
+            if (result.status() == 0) {
+                System.out.println("Successfully joined game");
+                menu = "game";
             } else {
-                System.out.println("Unexpected error. Please try again.");
+                if (result.status() == 400) {
+                    System.out.println("Invalid input. Please try again.");
+                } else if (result.status() == 401) {
+                    System.out.println("Unauthorized request. Please try again.");
+                } else if (result.status() == 403) {
+                    System.out.println("Color already taken. Please try again.");
+                } else {
+                    System.out.println("Unexpected error. Please try again.");
+                }
             }
+        } else {
+            System.out.println("No game found with id " + gameID + ". Please try again.");
         }
-
-//        System.out.println("Successfully joined game " + gameID);
-//        menu = "game";
     }
 
     private static void observeGame() {
+        listGames();
+
         System.out.println("Observing game");
         System.out.println("Enter game ID");
         int gameID = scanner.nextInt();
+        scanner.nextLine();
 
-        //call joinGame
+        playerColor = "WHITE";
 
-        System.out.println("Successfully observing game " + gameID);
-        menu = "game";
+        int idKey = updateGameID(gameID);
+        if (idKey != 500) {
+            System.out.println("Successfully observing game " + gameID);
+            menu = "game";
+        } else {
+            System.out.println("No game found with id " + gameID + ". Please try again.");
+        }
     }
 
     private static void listGames() {
         System.out.println("Listing games");
 
-        //call listGames
-        //print list of games
         ListGamesResult result = server.listGames(authToken);
         data = (ArrayList) result.games();
         if (data.size() == 0) {
@@ -233,7 +234,7 @@ public class Client {
         else {
             for (int i = 0; i < data.size(); i++) {
                 System.out.println(i+1 + ". " + data.get(i).gameName());
-                gameIDs.put(i+1, data.get(i).gameID());
+                gameIDs.put(i, data.get(i).gameID());
             }
         }
     }
@@ -241,7 +242,6 @@ public class Client {
     private static void logout() {
         System.out.println("Logging out");
 
-        //call logout
         LogoutResult result = server.logout(new LogoutRequest(authToken));
         if (result.status() == 0) {
             System.out.println("Successfully logged out");
@@ -257,10 +257,14 @@ public class Client {
     }
 
     private static void gamePlayMenu() {
-//        System.out.println("Game");
-        DrawChessBoard.drawChessBoard(ChessGame.TeamColor.WHITE);
-        System.out.println("");
-        DrawChessBoard.drawChessBoard(ChessGame.TeamColor.BLACK);
+        if (playerColor.equals("WHITE")) {
+            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.WHITE);
+            System.out.println("");
+        }
+        else if (playerColor.equals("BLACK")) {
+            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.BLACK);
+            System.out.println("");
+        }
         loop = false;
     }
 
@@ -268,7 +272,7 @@ public class Client {
         if (id <= data.size() && id > 0) {
             return id-1;
         }
-        return 0;
+        return 500;
     }
 }
 

@@ -42,6 +42,9 @@ public class ServerFacadeTests {
 
     @AfterAll
     static void stopServer() {
+        user.clear();
+        auth.clear();
+        game.clear();
         server.stop();
     }
 
@@ -134,25 +137,41 @@ public class ServerFacadeTests {
     public void negativeListGamesTest() throws ResponseException, IOException {
         RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
         String authToken = facade.register(registerRequest).authToken();
-
-        ListGamesResult result = facade.listGames(authToken);
+//        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+//        facade.createGame(createGameRequest, authToken);
+        ListGamesResult result = facade.listGames("");
         ArrayList<GameData> data = (ArrayList) result.games();
 
-        Assertions.assertTrue(data.get(0).gameID() == 401);
+        Assertions.assertEquals(401, data.get(0).gameID());
     }
 
     @Test
     public void positiveJoinGameTest() throws ResponseException, IOException {
+        game.clear();
+        RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
+        String authToken = facade.register(registerRequest).authToken();
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
+        int id = facade.createGame(createGameRequest, authToken).gameID();
+        JoinGameRequest joinGameRequest = new JoinGameRequest("BLACK", id);
+        LogoutResult result = facade.joinGame(joinGameRequest, authToken);
+        //ArrayList<GameData> data = (ArrayList) result.games();
+
+        Assertions.assertEquals(0, result.status());
+    }
+
+    @Test
+    public void negativeJoinGameTest() throws ResponseException, IOException {
         RegisterRequest registerRequest = new RegisterRequest("myUsername", "myPassword", "myEmail");
         String authToken = facade.register(registerRequest).authToken();
 
         CreateGameRequest createGameRequest = new CreateGameRequest("myGame");
         facade.createGame(createGameRequest, authToken);
         JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
-        LogoutResult result = facade.joinGame(joinGameRequest, authToken);
+        LogoutResult result = facade.joinGame(joinGameRequest, "");
         //ArrayList<GameData> data = (ArrayList) result.games();
 
-        Assertions.assertEquals(result.status(), 0);
+        Assertions.assertEquals(result.status(), 401);
     }
 
 }

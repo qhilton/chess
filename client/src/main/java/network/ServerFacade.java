@@ -55,30 +55,24 @@ public class ServerFacade {
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) {
         try {
-            //LogoutResult result = clientCommunicator.logout(request);
             return clientCommunicator.createGame(request, authToken);
         } catch (ResponseException e) {
             if (e.StatusCode() == 401) {
                 return new CreateGameResult(401);
-            }// else {
-//                return new LoginResult("500", "");
-//            }
+            }
             return new CreateGameResult(e.StatusCode());
         }
     }
 
     public ListGamesResult listGames(String authToken) {
         try {
-            //LogoutResult result = clientCommunicator.logout(request);
             return clientCommunicator.listGames(authToken);
         } catch (ResponseException e) {
             Collection<GameData> list = new ArrayList<>();
             if (e.StatusCode() == 401) {
                 list.add(new GameData(401, "", "", "", null));
                 return new ListGamesResult(list);
-            }// else {
-//                return new LoginResult("500", "");
-//            }
+            }
             list.add(new GameData(500, "", "", "", null));
             return new ListGamesResult(list);
         }
@@ -86,8 +80,7 @@ public class ServerFacade {
 
     public LogoutResult joinGame(JoinGameRequest request, String authToken) {
         try {
-            LogoutResult result = clientCommunicator.joinGame(request, authToken);
-            return result;
+            return clientCommunicator.joinGame(request, authToken);
         } catch (ResponseException e) {
             return new LogoutResult(e.StatusCode());
         }

@@ -26,12 +26,6 @@ public class UserHandler {
     }
 
     public void handleLogout(String json) throws DataAccessException, ResponseException {
-//        String authToken = serializer.fromJson(json, String.class);
-//        if (authToken != null && authToken.startsWith("Bearer ")) {
-//            authToken = authToken.substring(7);
-//            System.out.println("Token extracted: " + authToken);
-//        }
-//        userService.logout(authToken);
         userService.logout(serializer.fromJson(json, String.class));
     }
 

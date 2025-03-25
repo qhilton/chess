@@ -33,7 +33,7 @@ public class ResponseException extends Throwable {
         return message;
     }
 
-    public int StatusCode() {
+    public int getStatusCode() {
         return statusCode;
     }
 }

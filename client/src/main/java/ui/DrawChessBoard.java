@@ -74,31 +74,35 @@ public class DrawChessBoard {
     private static void drawCol(PrintStream out, int row, int col) {
         if (row % 2 == 0) {
             if (col % 2 == 1) {
-                drawWhiteSquare(out, row, col);
+                setWhite(out);
+                drawSquare(out, row, col);
             } else {
-                drawBlackSquare(out, row, col);
+                setBlack(out);
+                drawSquare(out, row, col);
             }
         } else {
             if (col % 2 == 1) {
-                drawBlackSquare(out, row, col);
+                setBlack(out);
+                drawSquare(out, row, col);
             } else {
-                drawWhiteSquare(out, row, col);
+                setWhite(out);
+                drawSquare(out, row, col);
             }
         }
     }
 
-    private static void drawWhiteSquare(PrintStream out, int row, int col) {
-        out.print(SET_BG_COLOR_WHITE);
+    private static void drawSquare(PrintStream out, int row, int col) {
         ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row, col));
         setColor(out, piece);
         drawPiece(out, piece);
     }
 
-    private static void drawBlackSquare(PrintStream out, int row, int col) {
+    private static void setWhite(PrintStream out) {
+        out.print(SET_BG_COLOR_WHITE);
+    }
+
+    private static void setBlack(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
-        ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row, col));
-        setColor(out, piece);
-        drawPiece(out, piece);
     }
 
     private static void setColor(PrintStream out, ChessPiece piece) {

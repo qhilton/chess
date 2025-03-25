@@ -23,9 +23,9 @@ public class ServerFacade {
         try {
             return clientCommunicator.register(request);
         } catch (ResponseException e) {
-            if (e.StatusCode() == 401) {
+            if (e.getStatusCode() == 401) {
                 return new RegisterResult("401", "");
-            } else if (e.StatusCode() == 403) {
+            } else if (e.getStatusCode() == 403) {
                 return new RegisterResult("403", "");
             } else {
                 return new RegisterResult("500", "");
@@ -37,7 +37,7 @@ public class ServerFacade {
         try {
             return clientCommunicator.login(request);
         } catch (ResponseException e) {
-            if (e.StatusCode() == 401) {
+            if (e.getStatusCode() == 401) {
                 return new LoginResult("401", "");
             } else {
                 return new LoginResult("500", "");
@@ -49,7 +49,7 @@ public class ServerFacade {
         try {
             return clientCommunicator.logout(request);
         } catch (ResponseException e) {
-            return new LogoutResult(e.StatusCode());
+            return new LogoutResult(e.getStatusCode());
         }
     }
 
@@ -57,10 +57,10 @@ public class ServerFacade {
         try {
             return clientCommunicator.createGame(request, authToken);
         } catch (ResponseException e) {
-            if (e.StatusCode() == 401) {
+            if (e.getStatusCode() == 401) {
                 return new CreateGameResult(401);
             }
-            return new CreateGameResult(e.StatusCode());
+            return new CreateGameResult(e.getStatusCode());
         }
     }
 
@@ -69,7 +69,7 @@ public class ServerFacade {
             return clientCommunicator.listGames(authToken);
         } catch (ResponseException e) {
             Collection<GameData> list = new ArrayList<>();
-            if (e.StatusCode() == 401) {
+            if (e.getStatusCode() == 401) {
                 list.add(new GameData(401, "", "", "", null));
                 return new ListGamesResult(list);
             }
@@ -82,7 +82,7 @@ public class ServerFacade {
         try {
             return clientCommunicator.joinGame(request, authToken);
         } catch (ResponseException e) {
-            return new LogoutResult(e.StatusCode());
+            return new LogoutResult(e.getStatusCode());
         }
     }
 }

@@ -6,15 +6,19 @@ import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
     private static ChessGame game = new ChessGame();
+    private static Integer[][] highlightBoard;
 
-    public static void drawChessBoard(ChessGame.TeamColor teamColor) {
+    public static void drawChessBoard(ChessGame.TeamColor teamColor, ChessPosition position) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
+
+        setHighlightBoard(position);
 
         drawHeaders(out, teamColor);
 
@@ -92,6 +96,8 @@ public class DrawChessBoard {
     }
 
     private static void drawSquare(PrintStream out, int row, int col) {
+
+        setHighlightColor(out, row, col);
         ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row, col));
         setColor(out, piece);
         drawPiece(out, piece);
@@ -103,6 +109,22 @@ public class DrawChessBoard {
 
     private static void setBlack(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
+    }
+
+    private static void setYellow(PrintStream out) {
+        out.print(SET_BG_COLOR_YELLOW);
+    }
+
+    private static void setGreen(PrintStream out) {
+        out.print(SET_BG_COLOR_GREEN);
+    }
+
+    private static void setHighlightColor(PrintStream out, int row, int col) {
+        if (highlightBoard[row-1][col-1] == 1) {
+            setYellow(out);
+        } else if (highlightBoard[row-1][col-1] == 2) {
+            setGreen(out);
+        }
     }
 
     private static void setColor(PrintStream out, ChessPiece piece) {
@@ -162,5 +184,22 @@ public class DrawChessBoard {
     private static void setBorder(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
+    }
+
+    private static void setHighlightBoard(ChessPosition position) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                highlightBoard[i][j] = 0;
+            }
+        }
+
+        if (position.getRow() != 0) {
+            highlightBoard[position.getRow()-1][position.getColumn()-1] = 1;
+            game.getBoard().getPiece(position);
+            ArrayList<ChessPosition> potentialMoves = (ArrayList) game.validMoves(position);
+            for (ChessPosition move : potentialMoves) {
+                highlightBoard[move.getRow()-1][move.getColumn()-1] = 2;
+            }
+        }
     }
 }

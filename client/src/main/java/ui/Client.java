@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import execption.ResponseException;
 import model.GameData;
 import network.ServerFacade;
@@ -233,7 +234,17 @@ public class Client {
         }
         else {
             for (int i = 0; i < data.size(); i++) {
-                System.out.println(i+1 + ". " + data.get(i).gameName());
+                System.out.print(i+1 + ". " + data.get(i).gameName());
+                if (data.get(i).whiteUsername() != null) {
+                    System.out.print(" (White: " + data.get(i).whiteUsername());
+                } else {
+                    System.out.print(" (White: <open>");
+                }
+                if (data.get(i).blackUsername() != null) {
+                    System.out.println(" | (Black: " + data.get(i).blackUsername() + ")");
+                } else {
+                    System.out.println(" | (Black: <open>)");
+                }
                 gameIDs.put(i, data.get(i).gameID());
             }
         }
@@ -257,15 +268,112 @@ public class Client {
     }
 
     private static void gamePlayMenu() {
+        drawBoard(new ChessPosition(0, 0));
+        //menu = "auth";
+
+        System.out.println("\nOptions");
+        System.out.println("1. Redraw Chess Board");
+        System.out.println("2. Make Move");
+        System.out.println("3. Highlight Legal Moves");
+        System.out.println("4. Leave");
+        System.out.println("5. Resign");
+        System.out.println("6. Help");
+
+        String result = scanner.nextLine();
+
+        switch (result) {
+            case ("1"):
+                drawBoard(new ChessPosition(0, 0));
+                break;
+            case ("2"):
+                System.out.println("Enter position (Ex: a1)");
+                String positionString = scanner.nextLine();
+                if (validatePiece(positionString) != null) {
+                    ChessPosition position = validatePiece(positionString);
+                    drawBoard(position);
+                } else {
+                    System.out.println("Invalid input. Please try again.");
+                }
+                break;
+            case ("3"):
+                System.out.println("not implemented");
+                break;
+            case ("4"):
+                System.out.println("not implemented");
+                break;
+            case ("5"):
+                System.out.println("not implemented");
+                break;
+        }
+
+    }
+
+    private static void drawBoard(ChessPosition position) {
         if (playerColor.equals("WHITE")) {
-            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.WHITE);
+            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.WHITE, position);
             System.out.println("");
         }
         else if (playerColor.equals("BLACK")) {
-            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.BLACK);
+            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.BLACK, position);
             System.out.println("");
         }
-        loop = false;
+    }
+
+    private static ChessPosition validatePiece(String positionString) {
+        String rowPos = positionString.substring(0, 1);
+        String colPos = positionString.substring(1, 2);
+        int row = convertRow(rowPos);
+        int col = convertCol(colPos);
+
+        if (row == 0 || col == 0) {
+            return null;
+        }
+
+        return new ChessPosition(row, col);
+    }
+
+    private static int convertRow(String rowPos) {
+        int row = 0;
+        if (rowPos.equals("a")) {
+            row = 1;
+        } else if (rowPos.equals("b")) {
+            row = 2;
+        } else if (rowPos.equals("c")) {
+            row = 3;
+        } else if (rowPos.equals("d")) {
+            row = 4;
+        } else if (rowPos.equals("e")) {
+            row = 5;
+        } else if (rowPos.equals("f")) {
+            row = 6;
+        } else if (rowPos.equals("g")) {
+            row = 7;
+        } else if (rowPos.equals("h")) {
+            row = 8;
+        }
+        return row;
+    }
+
+    private static int convertCol(String colPos) {
+        int col = 0;
+        if (colPos.equals("1")) {
+            col = 1;
+        } else if (colPos.equals("2")) {
+            col = 2;
+        } else if (colPos.equals("3")) {
+            col = 3;
+        } else if (colPos.equals("4")) {
+            col = 4;
+        } else if (colPos.equals("5")) {
+            col = 5;
+        } else if (colPos.equals("6")) {
+            col = 6;
+        } else if (colPos.equals("7")) {
+            col = 7;
+        } else if (colPos.equals("8")) {
+            col = 8;
+        }
+        return col;
     }
 
     private static int updateGameID(int id) {

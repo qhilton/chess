@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="CheckStyle-IDEA-Module" serialisationVersion="2">
+    <option name="activeLocationsIds" />
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -12,6 +15,7 @@
     <orderEntry type="module" module-name="server" scope="TEST" />
     <orderEntry type="library" name="google.code.gson" level="project" />
     <orderEntry type="library" name="junit.jupiter" level="project" />
+    <orderEntry type="library" name="glassfish.tyrus.bundles.standalone.client" level="project" />
   </component>
   <component name="SonarLintModuleSettings">
     <option name="uniqueId" value="be4e4282-df58-4d9a-bb46-d0310fb8af0a" />

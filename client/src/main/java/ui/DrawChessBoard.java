@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
@@ -12,7 +13,7 @@ import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
     private static ChessGame game = new ChessGame();
-    private static Integer[][] highlightBoard;
+    private static Integer[][] highlightBoard = new Integer[8][8];
 
     public static void drawChessBoard(ChessGame.TeamColor teamColor, ChessPosition position) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
@@ -195,10 +196,11 @@ public class DrawChessBoard {
 
         if (position.getRow() != 0) {
             highlightBoard[position.getRow()-1][position.getColumn()-1] = 1;
-            game.getBoard().getPiece(position);
-            ArrayList<ChessPosition> potentialMoves = (ArrayList) game.validMoves(position);
-            for (ChessPosition move : potentialMoves) {
-                highlightBoard[move.getRow()-1][move.getColumn()-1] = 2;
+            if (game.getBoard().getPiece(position) != null) {
+                ArrayList<ChessMove> potentialMoves = (ArrayList) game.validMoves(position);
+                for (ChessMove move : potentialMoves) {
+                    highlightBoard[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = 2;
+                }
             }
         }
     }

@@ -24,6 +24,7 @@ public class Client {
     static ArrayList<GameData> data;
     static Map<Integer, Integer> gameIDs;
     static String playerColor;
+    static Boolean firstJoin = true;
 
     public static void main(String[] args) throws IOException, ResponseException {
         if (args.length == 1) {
@@ -209,7 +210,7 @@ public class Client {
         int gameID = scanner.nextInt();
         scanner.nextLine();
 
-        playerColor = "WHITE";
+        playerColor = "Observe";
 
         int idKey = updateGameID(gameID);
         if (idKey != 500) {
@@ -268,7 +269,10 @@ public class Client {
     }
 
     private static void gamePlayMenu() {
-        drawBoard(new ChessPosition(0, 0));
+        if (firstJoin) {
+            drawBoard(new ChessPosition(0, 0));
+            firstJoin = false;
+        }
         //menu = "auth";
 
         System.out.println("\nOptions");
@@ -286,20 +290,13 @@ public class Client {
                 drawBoard(new ChessPosition(0, 0));
                 break;
             case ("2"):
-                System.out.println("Enter position (Ex: a1)");
-                String positionString = scanner.nextLine();
-                if (validatePiece(positionString) != null) {
-                    ChessPosition position = validatePiece(positionString);
-                    drawBoard(position);
-                } else {
-                    System.out.println("Invalid input. Please try again.");
-                }
+                System.out.println("not implemented");
                 break;
             case ("3"):
-                System.out.println("not implemented");
+                highlightMoves();
                 break;
             case ("4"):
-                System.out.println("not implemented");
+                leaveGame();
                 break;
             case ("5"):
                 System.out.println("not implemented");
@@ -309,7 +306,7 @@ public class Client {
     }
 
     private static void drawBoard(ChessPosition position) {
-        if (playerColor.equals("WHITE")) {
+        if (playerColor.equals("WHITE") || playerColor.equals("Observe")) {
             DrawChessBoard.drawChessBoard(ChessGame.TeamColor.WHITE, position);
             System.out.println("");
         }
@@ -319,9 +316,37 @@ public class Client {
         }
     }
 
+    private static void highlightMoves() {
+        System.out.println("Enter position (Ex: a1)");
+        String positionString = scanner.nextLine();
+        if (validatePiece(positionString) != null) {
+            ChessPosition position = validatePiece(positionString);
+            drawBoard(position);
+        } else {
+            System.out.println("Invalid input. Please try again.");
+        }
+    }
+
+    private static void leaveGame() {
+        System.out.println("Are you sure you want to leave the game? (y/n)");
+        String confirmLeave = scanner.nextLine();
+        if (confirmLeave.equals("y")) {
+            System.out.println("Leaving game.");
+
+            //update game to remove player color from game
+
+            menu = "auth";
+        } else if (confirmLeave.equals("n")) {
+            System.out.println("Staying in game.");
+        } else {
+            System.out.println("Invalid input. Please try again.");
+        }
+
+    }
+
     private static ChessPosition validatePiece(String positionString) {
-        String rowPos = positionString.substring(0, 1);
-        String colPos = positionString.substring(1, 2);
+        String colPos = positionString.substring(0, 1);
+        String rowPos = positionString.substring(1, 2);
         int row = convertRow(rowPos);
         int col = convertCol(colPos);
 
@@ -332,48 +357,48 @@ public class Client {
         return new ChessPosition(row, col);
     }
 
-    private static int convertRow(String rowPos) {
-        int row = 0;
-        if (rowPos.equals("a")) {
-            row = 1;
-        } else if (rowPos.equals("b")) {
-            row = 2;
-        } else if (rowPos.equals("c")) {
-            row = 3;
-        } else if (rowPos.equals("d")) {
-            row = 4;
-        } else if (rowPos.equals("e")) {
-            row = 5;
-        } else if (rowPos.equals("f")) {
-            row = 6;
-        } else if (rowPos.equals("g")) {
-            row = 7;
-        } else if (rowPos.equals("h")) {
-            row = 8;
-        }
-        return row;
-    }
-
     private static int convertCol(String colPos) {
         int col = 0;
-        if (colPos.equals("1")) {
+        if (colPos.equals("a")) {
             col = 1;
-        } else if (colPos.equals("2")) {
+        } else if (colPos.equals("b")) {
             col = 2;
-        } else if (colPos.equals("3")) {
+        } else if (colPos.equals("c")) {
             col = 3;
-        } else if (colPos.equals("4")) {
+        } else if (colPos.equals("d")) {
             col = 4;
-        } else if (colPos.equals("5")) {
+        } else if (colPos.equals("e")) {
             col = 5;
-        } else if (colPos.equals("6")) {
+        } else if (colPos.equals("f")) {
             col = 6;
-        } else if (colPos.equals("7")) {
+        } else if (colPos.equals("g")) {
             col = 7;
-        } else if (colPos.equals("8")) {
+        } else if (colPos.equals("h")) {
             col = 8;
         }
         return col;
+    }
+
+    private static int convertRow(String rowPos) {
+        int row = 0;
+        if (rowPos.equals("1")) {
+            row = 1;
+        } else if (rowPos.equals("2")) {
+            row = 2;
+        } else if (rowPos.equals("3")) {
+            row = 3;
+        } else if (rowPos.equals("4")) {
+            row = 4;
+        } else if (rowPos.equals("5")) {
+            row = 5;
+        } else if (rowPos.equals("6")) {
+            row = 6;
+        } else if (rowPos.equals("7")) {
+            row = 7;
+        } else if (rowPos.equals("8")) {
+            row = 8;
+        }
+        return row;
     }
 
     private static int updateGameID(int id) {

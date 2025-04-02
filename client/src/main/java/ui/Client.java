@@ -25,6 +25,7 @@ public class Client {
     static Map<Integer, Integer> gameIDs;
     static String playerColor;
     static Boolean firstJoin = true;
+    static int idKey;
 
     public static void main(String[] args) throws IOException, ResponseException {
         if (args.length == 1) {
@@ -180,7 +181,7 @@ public class Client {
             playerColor = "BLACK";
         }
 
-        int idKey = updateGameID(gameID);
+        idKey = updateGameID(gameID);
         if (idKey != 500) {
             LogoutResult result = server.joinGame(new JoinGameRequest(playerColor, gameIDs.get(idKey)), authToken);
             if (result.status() == 0) {
@@ -334,8 +335,25 @@ public class Client {
             System.out.println("Leaving game.");
 
             //update game to remove player color from game
+            if (idKey != 500) {
+                LogoutResult result = server.joinGame(new JoinGameRequest(null, gameIDs.get(idKey)), authToken);
+                if (result.status() == 0) {
+                    System.out.println("Successfully left game");
+                    menu = "auth";
+                } else {
+                    if (result.status() == 400) {
+                        System.out.println("Invalid input. Please try again.");
+                    } else if (result.status() == 401) {
+                        System.out.println("Unauthorized request. Please try again.");
+                    } else if (result.status() == 403) {
+                        System.out.println("Color already taken. Please try again.");
+                    } else {
+                        System.out.println("Unexpected error. Please try again.");
+                    }
+                }
+            }
 
-            menu = "auth";
+            //menu = "auth";
         } else if (confirmLeave.equals("n")) {
             System.out.println("Staying in game.");
         } else {

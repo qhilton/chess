@@ -3,6 +3,9 @@ package server;
 import execption.ResponseException;
 import handler.GameHandler;
 import handler.UserHandler;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.*;
 import spark.*;
 
 public class Server {
@@ -22,6 +25,8 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.get("/game", this::listGames);
+
+        Spark.webSocket("/ws", WSServer.class);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -160,6 +165,21 @@ public class Server {
         } catch (Exception | ResponseException e) {
             res.status(500);
             return "{ \"message\": \"Error: (description of error)\" }";
+        }
+    }
+
+    @WebSocket
+    public class WSServer {
+        public static void main(String[] args) {
+            Spark.port(8080);
+            Spark.webSocket("/ws", WSServer.class);
+            Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
+        }
+
+        @OnWebSocketMessage
+        public void onMessage(Session session, String message) throws Exception {
+            System.out.printf("Received: %s", message);
+            session.getRemote().sendString("WebSocket response: " + message);
         }
     }
 }

@@ -12,16 +12,18 @@ import java.util.Collection;
 
 public class ServerFacade {
     private final String serverUrl;
-    private ClientCommunicator clientCommunicator;
+    private HttpCommunicator httpCommunicator;
+    private WebSocketCommunicator webSocketCommunicator;
 
     public ServerFacade(String url) throws MalformedURLException {
         serverUrl = url;
-        clientCommunicator = new ClientCommunicator(serverUrl);
+        httpCommunicator = new HttpCommunicator(serverUrl);
+        //webSocketCommunicator = new WebSocketCommunicator(serverUrl);
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException, IOException {
         try {
-            return clientCommunicator.register(request);
+            return httpCommunicator.register(request);
         } catch (ResponseException e) {
             if (e.getStatusCode() == 401) {
                 return new RegisterResult("401", "");
@@ -35,7 +37,7 @@ public class ServerFacade {
 
     public LoginResult login(LoginRequest request) {
         try {
-            return clientCommunicator.login(request);
+            return httpCommunicator.login(request);
         } catch (ResponseException e) {
             if (e.getStatusCode() == 401) {
                 return new LoginResult("401", "");
@@ -47,7 +49,7 @@ public class ServerFacade {
 
     public LogoutResult logout(LogoutRequest request) {
         try {
-            return clientCommunicator.logout(request);
+            return httpCommunicator.logout(request);
         } catch (ResponseException e) {
             return new LogoutResult(e.getStatusCode());
         }
@@ -55,7 +57,7 @@ public class ServerFacade {
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) {
         try {
-            return clientCommunicator.createGame(request, authToken);
+            return httpCommunicator.createGame(request, authToken);
         } catch (ResponseException e) {
             if (e.getStatusCode() == 401) {
                 return new CreateGameResult(401);
@@ -66,7 +68,7 @@ public class ServerFacade {
 
     public ListGamesResult listGames(String authToken) {
         try {
-            return clientCommunicator.listGames(authToken);
+            return httpCommunicator.listGames(authToken);
         } catch (ResponseException e) {
             Collection<GameData> list = new ArrayList<>();
             if (e.getStatusCode() == 401) {
@@ -80,7 +82,7 @@ public class ServerFacade {
 
     public LogoutResult joinGame(JoinGameRequest request, String authToken) {
         try {
-            return clientCommunicator.joinGame(request, authToken);
+            return httpCommunicator.joinGame(request, authToken);
         } catch (ResponseException e) {
             return new LogoutResult(e.getStatusCode());
         }

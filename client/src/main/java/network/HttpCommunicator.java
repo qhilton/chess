@@ -14,14 +14,14 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-public class ClientCommunicator {
+public class HttpCommunicator {
     //private ServerFacade server;
     URL url;
     String serverUrl;
     Gson serializer;
     String authToken;
 
-    public ClientCommunicator(String urlString) throws MalformedURLException {
+    public HttpCommunicator(String urlString) throws MalformedURLException {
         //this.url = url.toURL();
         serverUrl = urlString;
         url = new URL(urlString);

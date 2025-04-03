@@ -7,6 +7,11 @@ import model.GameData;
 import network.ServerFacade;
 import request.*;
 import result.*;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Client {
+public class Client implements ServerMessageObserver {
     static Scanner scanner = new Scanner(System.in);
     static boolean loop = true;
     static String menu = "";
@@ -27,11 +32,11 @@ public class Client {
     static Boolean firstJoin = true;
     static int idKey;
 
-    public static void main(String[] args) throws IOException, ResponseException {
+    public static void main(String[] args) throws Exception, ResponseException {
         if (args.length == 1) {
             serverUrl = args[0];
         }
-        server = new ServerFacade(serverUrl);
+        server = new ServerFacade(serverUrl, new Client());
         gameIDs = new HashMap<>();
 
         System.out.println("Welcome to Chess!");
@@ -121,7 +126,7 @@ public class Client {
         }
     }
 
-    private static void authorizedMenu() {
+    private static void authorizedMenu() throws Exception {
         System.out.println("\nOptions");
         System.out.println("1. Create Game");
         System.out.println("2. Play Game");
@@ -166,7 +171,7 @@ public class Client {
         }
     }
 
-    private static void playGame() {
+    private static void playGame() throws Exception {
         listGames();
 
         System.out.println("Joining game");
@@ -175,16 +180,21 @@ public class Client {
         scanner.nextLine();
         System.out.println("Enter team color (w/b)");
         playerColor = scanner.nextLine();
+        ChessGame.TeamColor teamColor = null;
         if (playerColor.equals("w")) {
             playerColor = "WHITE";
+            teamColor = ChessGame.TeamColor.WHITE;
         } else if (playerColor.equals("b")) {
             playerColor = "BLACK";
+            teamColor = ChessGame.TeamColor.BLACK;
         }
 
         idKey = updateGameID(gameID);
         if (idKey != 500) {
             LogoutResult result = server.joinGame(new JoinGameRequest(playerColor, gameIDs.get(idKey)), authToken);
             if (result.status() == 0) {
+                server.makeConnection();
+                server.notifyJoin(authToken, gameIDs.get(idKey), teamColor);
                 System.out.println("Successfully joined game");
                 menu = "game";
             } else {
@@ -425,6 +435,20 @@ public class Client {
         }
         return 500;
     }
+
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
+            case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+        }
+    }
+
+    private void displayNotification(String message) {
+
+    }
+
 }
 
 

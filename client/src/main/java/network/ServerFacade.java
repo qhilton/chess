@@ -1,9 +1,14 @@
 package network;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import execption.ResponseException;
 import model.GameData;
 import request.*;
 import result.*;
+import ui.Client;
+import ui.ServerMessageObserver;
+import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -14,11 +19,13 @@ public class ServerFacade {
     private final String serverUrl;
     private HttpCommunicator httpCommunicator;
     private WebSocketCommunicator webSocketCommunicator;
+    private ServerMessageObserver observer;
 
-    public ServerFacade(String url) throws MalformedURLException {
+    public ServerFacade(String url, ServerMessageObserver observer) throws Exception {
         serverUrl = url;
         httpCommunicator = new HttpCommunicator(serverUrl);
-        //webSocketCommunicator = new WebSocketCommunicator(serverUrl);
+        this.observer = observer;
+        //webSocketCommunicator = new WebSocketCommunicator(serverUrl, observer);
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException, IOException {
@@ -86,5 +93,15 @@ public class ServerFacade {
         } catch (ResponseException e) {
             return new LogoutResult(e.getStatusCode());
         }
+    }
+
+    public void makeConnection() throws Exception {
+        webSocketCommunicator = new WebSocketCommunicator(serverUrl, observer);
+    }
+
+    public void notifyJoin(String authToken, int gameID, ChessGame.TeamColor playerColor) throws Exception {
+        UserGameCommand.CommandType commandType = UserGameCommand.CommandType.CONNECT;
+        UserGameCommand command = new UserGameCommand(commandType, authToken, gameID, playerColor, null);
+        webSocketCommunicator.send(new Gson().toJson(command));
     }
 }

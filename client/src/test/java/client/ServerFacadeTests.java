@@ -13,6 +13,7 @@ import result.CreateGameResult;
 import result.ListGamesResult;
 import result.LogoutResult;
 import server.Server;
+import ui.Client;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,11 +30,11 @@ public class ServerFacadeTests {
     private static SQLGameDAO game;
 
     @BeforeAll
-    public static void init() throws MalformedURLException, ResponseException, DataAccessException {
+    public static void init() throws Exception, ResponseException {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("http://localhost:" + port);
+        facade = new ServerFacade("http://localhost:" + port, new Client());
 
         user = new SQLUserDAO();
         auth = new SQLAuthDAO();

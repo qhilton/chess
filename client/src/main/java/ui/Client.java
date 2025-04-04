@@ -446,7 +446,15 @@ public class Client implements ServerMessageObserver {
     }
 
     private void displayNotification(String message) {
+        System.out.println(message);
+    }
 
+    private void displayError(String message) {
+        System.out.println(message);
+    }
+
+    private void loadGame(ChessGame game) {
+        System.out.println("");
     }
 
 }

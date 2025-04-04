@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class UserService {
     SQLUserDAO user; //change to SQLUserDAO
-    SQLAuthDAO auth; //change to SQLAuthDAO
+    public SQLAuthDAO auth; //change to SQLAuthDAO
 
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ResponseException {

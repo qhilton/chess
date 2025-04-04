@@ -101,7 +101,7 @@ public class ServerFacade {
 
     public void notifyJoin(String authToken, int gameID, ChessGame.TeamColor playerColor) throws Exception {
         UserGameCommand.CommandType commandType = UserGameCommand.CommandType.CONNECT;
-        UserGameCommand command = new UserGameCommand(commandType, authToken, gameID, playerColor, null);
+        UserGameCommand command = new UserGameCommand(commandType, authToken, gameID);
         webSocketCommunicator.send(new Gson().toJson(command));
     }
 }

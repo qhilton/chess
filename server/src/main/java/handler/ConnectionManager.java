@@ -26,7 +26,7 @@ public class ConnectionManager {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 Boolean sameGame = gameConnector.get(excludeUserName) == gameConnector.get(c.username);
-                if (!c.username.equals(excludeUserName)) {
+                if (!c.username.equals(excludeUserName) && sameGame) {
                     c.send(message.toString());
                 }
             } else {

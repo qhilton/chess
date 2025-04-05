@@ -13,7 +13,7 @@ import service.GameService;
 import java.util.Collection;
 
 public class GameHandler {
-    GameService gameService = new GameService();
+    public GameService gameService = new GameService();
     Gson serializer = new Gson();
 
     public String handleCreateGame(String authToken, String json) throws DataAccessException, ResponseException {

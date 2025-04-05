@@ -11,7 +11,8 @@ import spark.*;
 
 public class Server {
     public static UserHandler userHandler = new UserHandler();
-    GameHandler gameHandler = new GameHandler();
+    public static GameHandler gameHandler = new GameHandler();
+    WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);

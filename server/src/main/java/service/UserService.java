@@ -12,7 +12,7 @@ import result.RegisterResult;
 import java.util.UUID;
 
 public class UserService {
-    SQLUserDAO user; //change to SQLUserDAO
+    public SQLUserDAO user; //change to SQLUserDAO
     public SQLAuthDAO auth; //change to SQLAuthDAO
 
 

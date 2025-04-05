@@ -11,7 +11,7 @@ import result.CreateGameResult;
 import java.util.Collection;
 
 public class GameService {
-    SQLGameDAO game;
+    public SQLGameDAO game;
     private int nextID = 1;
 
     public CreateGameResult createGame(String authToken, CreateGameRequest createGameRequest) throws DataAccessException, ResponseException {

@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -12,6 +13,7 @@ import websocket.commands.ConnectCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -34,7 +36,7 @@ public class WebSocketHandler {
             connections.add(username, command.getGameID(), session);
 
             switch (command.getCommandType()) {
-                case CONNECT -> connect(session, username, (ConnectCommand) command);
+                case CONNECT -> connect(session, username, new Gson().fromJson(message, ConnectCommand.class));
 //                case MAKE_MOVE -> makeMove(session, username, (MakeMoveCommand) command);
 //                case LEAVE -> leaveGame(session, username, (LeaveGameCommand) command);
 //                case RESIGN -> resign(session, username, (ResignCommand) command);
@@ -74,36 +76,23 @@ public class WebSocketHandler {
 //        }
 //    }
 //
-    public void connect(Session session, String username, ConnectCommand command) throws IOException {
+    public void connect(Session session, String username, ConnectCommand command) throws IOException, DataAccessException {
 //        connections.add(username, command.getGameID(), session);
+//        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT)
+//        ConnectCommand connectCommand = new ConnectCommand(command.getCommandType(), command.getAuthToken(), command.getGameID())
         var message = String.format("%s joined the game as " + command.getPlayerColor(), username);
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage);
+
+        //TODO: need to send loadgamemessage using sendMessage
+        GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
+        LoadGameMessage load = new LoadGameMessage(gameData.game());
+        sendMessage(session.getRemote(), load);
     }
 
-
-    //
-    public void sendMessage(RemoteEndpoint remote, ErrorMessage message) throws IOException {
+    public void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
         remote.sendString(new Gson().toJson(message));
     }
-
-//    public void broadcast(String excludeVisitorName, NotificationMessage notification) throws IOException {
-//        var removeList = new ArrayList<Connection>();
-//        for (var c : connections.values()) {
-//            if (c.session.isOpen()) {
-//                if (!c.visitorName.equals(excludeVisitorName)) {
-//                    c.send(notification.toString());
-//                }
-//            } else {
-//                removeList.add(c);
-//            }
-//        }
-//
-//        // Clean up any connections that were left open.
-//        for (var c : removeList) {
-//            connections.remove(c.visitorName);
-//        }
-//    }
 
 //    public void saveSession(int gameID, Session session) {
 //        sessions.put(gameID, session);

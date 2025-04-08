@@ -13,10 +13,13 @@ import java.util.Objects;
 public class ChessGame implements Cloneable {
     private int turnTracker;
     private ChessBoard board;
+    private boolean liveGame;
+
     public ChessGame() {
         turnTracker = 0;
         board = new ChessBoard();
         board.resetBoard();
+        liveGame = true;
     }
 
     /**
@@ -39,6 +42,14 @@ public class ChessGame implements Cloneable {
         if (getTeamTurn() != team) {
             turnTracker++;
         }
+    }
+
+    public void disableGame() {
+        liveGame = false;
+    }
+
+    public boolean returnLiveGame() {
+       return liveGame;
     }
 
     /**

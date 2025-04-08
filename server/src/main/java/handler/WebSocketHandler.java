@@ -10,10 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
 import spark.Spark;
-import websocket.commands.ConnectCommand;
-import websocket.commands.LeaveGameCommand;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -41,7 +38,7 @@ public class WebSocketHandler {
 //                case CONNECT -> connect(session, username, new Gson().fromJson(message, ConnectCommand.class));
 //                case MAKE_MOVE -> makeMove(session, username, (MakeMoveCommand) command);
                 case LEAVE -> leaveGame(session, username, message);
-//                case RESIGN -> resign(session, username, (ResignCommand) command);
+                case RESIGN -> resign(session, username, message);
             }
         } catch (DataAccessException ex) {
             // Serializes and sends the error message
@@ -61,7 +58,7 @@ public class WebSocketHandler {
             message = String.format("%s is observing the game", username);
         }
         var serverMessage = new NotificationMessage(message);
-        connections.broadcast(username, serverMessage);
+        connections.broadcast(username, serverMessage, false);
 
         GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
         LoadGameMessage load = new LoadGameMessage(gameData.game());
@@ -86,13 +83,33 @@ public class WebSocketHandler {
             Server.gameHandler.gameService.game.updateGame(gameID, newData);
         }
 
-//        if (!command.getPlayerColor().equals("")) {
-//            message = String.format("%s joined the game as " + command.getPlayerColor(), username);
-//        } else {
-//            message = String.format("%s is observing the game", username);
-//        }
         var serverMessage = new NotificationMessage(message);
-        connections.broadcast(username, serverMessage);
+        connections.broadcast(username, serverMessage, false);
+    }
+
+    public void resign(Session session, String username, String commandMessage) throws IOException, DataAccessException {
+        ResignCommand command = new Gson().fromJson(commandMessage, ResignCommand.class);
+        GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
+        int gameID = gameData.gameID();
+        String whiteUsername = gameData.whiteUsername();
+        String blackUsername = gameData.blackUsername();
+        String gameName = gameData.gameName();
+        ChessGame game = gameData.game();
+
+        String message = "";
+
+        if (command.getPlayerColor().equals("white")) {
+            message = String.format("%s resigned from the game%nBlack wins!", username);
+        } else if (command.getPlayerColor().equals("black")) {
+            message = String.format("%s resigned from the game%nWhite wins!", username);
+        }
+
+        game.disableGame();
+        GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+        Server.gameHandler.gameService.game.updateGame(gameID, newData);
+
+        var serverMessage = new NotificationMessage(message);
+        connections.broadcast(username, serverMessage, true);
     }
 
     public void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {

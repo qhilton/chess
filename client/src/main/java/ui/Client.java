@@ -30,7 +30,7 @@ public class Client implements ServerMessageObserver {
     static ArrayList<GameData> data;
     static Map<Integer, Integer> gameIDs;
     static String playerColor;
-    static Boolean firstJoin = true;
+    static Boolean liveGame = true;
     static int idKey;
     static ChessGame game = new ChessGame();
     static boolean isBoardDrawn = false;
@@ -345,7 +345,7 @@ public class Client implements ServerMessageObserver {
                 leaveGame();
                 break;
             case ("5"):
-                System.out.println("not implemented");
+                resign();
                 break;
         }
 
@@ -379,27 +379,23 @@ public class Client implements ServerMessageObserver {
         String confirmLeave = scanner.nextLine();
         if (confirmLeave.equals("y")) {
             System.out.println("Leaving game.");
-
             server.notifyLeave(authToken, gameIDs.get(idKey), teamColor);
+            menu = "auth";
+        } else if (confirmLeave.equals("n")) {
+            System.out.println("Staying in game.");
+        } else {
+            System.out.println("Invalid input. Please try again.");
+        }
+    }
 
-            //update game to remove player color from game
-//            if (idKey != 500) {
-//                //LogoutResult result = server.joinGame(new JoinGameRequest(null, gameIDs.get(idKey)), authToken);
-//                if (result.status() == 0) {
-//                    System.out.println("Successfully left game");
-//                    menu = "auth";
-//                } else {
-//                    if (result.status() == 400) {
-//                        System.out.println("Invalid input. Please try again.");
-//                    } else if (result.status() == 401) {
-//                        System.out.println("Unauthorized request. Please try again.");
-//                    } else if (result.status() == 403) {
-//                        System.out.println("Color already taken. Please try again.");
-//                    } else {
-//                        System.out.println("Unexpected error. Please try again.");
-//                    }
-//                }
-//            }
+    private static void resign() throws Exception {
+        System.out.println("Are you sure you want to resign from the game? (y/n)");
+        String confirmLeave = scanner.nextLine();
+        if (confirmLeave.equals("y")) {
+            System.out.println("Resigning from the game.");
+
+            liveGame = false;
+            server.notifyResign(authToken, gameIDs.get(idKey), teamColor);
 
             menu = "auth";
         } else if (confirmLeave.equals("n")) {
@@ -407,7 +403,6 @@ public class Client implements ServerMessageObserver {
         } else {
             System.out.println("Invalid input. Please try again.");
         }
-
     }
 
     private static ChessPosition validatePiece(String positionString) {

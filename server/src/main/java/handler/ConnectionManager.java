@@ -21,6 +21,7 @@ public class ConnectionManager {
 
     public void remove(String username) {
         connections.remove(username);
+        gameConnector.remove(username);
     }
 
     public void broadcast(String excludeUserName, ServerMessage message, boolean resign) throws IOException {

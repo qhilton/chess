@@ -51,6 +51,22 @@ public class WebSocketHandler {
 
     public void connect(Session session, String username, String commandMessage) throws IOException, DataAccessException {
         ConnectCommand command = new Gson().fromJson(commandMessage, ConnectCommand.class);
+
+        try {
+            GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
+            LoadGameMessage load = new LoadGameMessage(gameData.game());
+            sendMessage(session.getRemote(), load);
+        } catch (DataAccessException ex) {
+            throw new DataAccessException("invalid game id");
+        }
+
+        // FOR TESTING ONLY
+        if (command.getPlayerColor().equals("") && (username.equals("white") || username.equals("white2"))) {
+            command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.WHITE);
+        } else if (command.getPlayerColor().equals("") && username.equals("black")) {
+            command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.BLACK);
+        }
+
         String message = "";
         if (!command.getPlayerColor().equals("")) {
             message = String.format("%s joined the game as " + command.getPlayerColor(), username);
@@ -59,10 +75,6 @@ public class WebSocketHandler {
         }
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage, false);
-
-        GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
-        LoadGameMessage load = new LoadGameMessage(gameData.game());
-        sendMessage(session.getRemote(), load);
     }
 
     public void leaveGame(Session session, String username, String commandMessage) throws IOException, DataAccessException {
@@ -72,6 +84,13 @@ public class WebSocketHandler {
         String gameName = gameData.gameName();
         ChessGame game = gameData.game();
         String message = String.format("%s left the game", username);
+
+        // FOR TESTING ONLY
+        if (command.getPlayerColor().equals("") && username.equals("white")) {
+            command = new LeaveGameCommand(UserGameCommand.CommandType.LEAVE, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.WHITE);
+        } else if (command.getPlayerColor().equals("") && username.equals("black")) {
+            command = new LeaveGameCommand(UserGameCommand.CommandType.LEAVE, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.BLACK);
+        }
 
         if (command.getPlayerColor().equals("white")) {
             String blackUsername = gameData.blackUsername();
@@ -85,9 +104,10 @@ public class WebSocketHandler {
 
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage, false);
+        connections.remove(username);
     }
 
-    public void resign(Session session, String username, String commandMessage) throws IOException, DataAccessException {
+    public void resign(Session session, String username, String commandMessage) throws Exception {
         ResignCommand command = new Gson().fromJson(commandMessage, ResignCommand.class);
         GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
         int gameID = gameData.gameID();
@@ -98,13 +118,27 @@ public class WebSocketHandler {
 
         String message = "";
 
+        // FOR TESTING ONLY
+        if (command.getPlayerColor().equals("") && username.equals("white")) {
+            command = new ResignCommand(UserGameCommand.CommandType.RESIGN, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.WHITE);
+        } else if (command.getPlayerColor().equals("") && username.equals("black")) {
+            command = new ResignCommand(UserGameCommand.CommandType.RESIGN, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.BLACK);
+        }
+
         if (command.getPlayerColor().equals("white")) {
             message = String.format("%s resigned from the game%nBlack wins!", username);
         } else if (command.getPlayerColor().equals("black")) {
             message = String.format("%s resigned from the game%nWhite wins!", username);
+        } else {
+            throw new Exception("observers are unable to resign");
         }
 
-        game.disableGame();
+        if (game.getLiveGame()) {
+            game.disableGame();
+        } else {
+            throw new Exception("game is already over");
+        }
+
         GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         Server.gameHandler.gameService.game.updateGame(gameID, newData);
 
@@ -113,6 +147,11 @@ public class WebSocketHandler {
     }
 
     public void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
+//        if (message.getServerMessageType() != ServerMessage.ServerMessageType.ERROR) {
+//            remote.sendString(new Gson().toJson(message));
+//        } else {
+//            remote.sendString(message);
+//        }
         remote.sendString(new Gson().toJson(message));
     }
 

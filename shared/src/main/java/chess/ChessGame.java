@@ -48,7 +48,7 @@ public class ChessGame implements Cloneable {
         liveGame = false;
     }
 
-    public boolean returnLiveGame() {
+    public boolean getLiveGame() {
        return liveGame;
     }
 

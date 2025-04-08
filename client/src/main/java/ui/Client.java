@@ -396,8 +396,6 @@ public class Client implements ServerMessageObserver {
 
             liveGame = false;
             server.notifyResign(authToken, gameIDs.get(idKey), teamColor);
-
-            menu = "auth";
         } else if (confirmLeave.equals("n")) {
             System.out.println("Staying in game.");
         } else {

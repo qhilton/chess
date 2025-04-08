@@ -14,7 +14,6 @@ import java.net.URI;
 
 public class WebSocketCommunicator extends Endpoint {
     private Session session;
-    //private ServerMessageObserver observer;
 
     public WebSocketCommunicator(String serverUrl, ServerMessageObserver observer) throws Exception {
         serverUrl = serverUrl.replace("http", "ws");
@@ -23,26 +22,14 @@ public class WebSocketCommunicator extends Endpoint {
         this.session = container.connectToServer(this, uri);
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-//            public void onMessage(String message) {
-//                System.out.println(message);
-//            }
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    System.out.println("hello");
-                    System.out.println(serverMessage);
-//                    switch (serverMessage.getServerMessageType()) {
-//                        case (ServerMessage.ServerMessageType.LOAD_GAME):
-//                    }
-//                    if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-//
-//                    }
                     switch (serverMessage.getServerMessageType()) {
                         case NOTIFICATION -> observer.notify(new Gson().fromJson(message, NotificationMessage.class));
                         case ERROR -> observer.notify(new Gson().fromJson(message, ErrorMessage.class));
                         case LOAD_GAME -> observer.notify(new Gson().fromJson(message, LoadGameMessage.class));
                     }
-//                    observer.notify(serverMessage);
                 }
         });
     }

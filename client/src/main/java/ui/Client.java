@@ -224,7 +224,7 @@ public class Client implements ServerMessageObserver {
                 server.makeConnection();
                 server.notifyJoin(authToken, gameIDs.get(idKey), teamColor);
                 System.out.println("Successfully joined game");
-//                menu = "game";
+                menu = "game";
             } else {
                 if (result.status() == 400) {
                     System.out.println("Invalid input. Please try again.");
@@ -241,7 +241,7 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    private static void observeGame() {
+    private static void observeGame() throws Exception {
         listGames();
 
         System.out.println("Observing game");
@@ -253,6 +253,9 @@ public class Client implements ServerMessageObserver {
 
         int idKey = updateGameID(gameID);
         if (idKey != 500) {
+            server.makeConnection();
+            server.notifyObserve(authToken, gameIDs.get(idKey));
+
             System.out.println("Successfully observing game " + gameID);
             menu = "game";
         } else {
@@ -479,7 +482,6 @@ public class Client implements ServerMessageObserver {
     }
 
     private void displayNotification(String message) {
-        System.out.println("notification");
         System.out.println(message);
     }
 
@@ -488,7 +490,6 @@ public class Client implements ServerMessageObserver {
     }
 
     private void loadGame(ChessGame game) {
-        System.out.println("load");
         this.game = game;
 //        menu = "game";
         drawBoard(new ChessPosition(0, 0));

@@ -1,5 +1,6 @@
 package handler;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.GameData;
@@ -82,7 +83,12 @@ public class WebSocketHandler {
 //        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT)
 //        ConnectCommand connectCommand = new ConnectCommand(command.getCommandType(), command.getAuthToken(), command.getGameID())
         ConnectCommand command = new Gson().fromJson(commandMessage, ConnectCommand.class);
-        var message = String.format("%s joined the game as " + command.getPlayerColor(), username);
+        String message = "";
+        if (!command.getPlayerColor().equals("")) {
+            message = String.format("%s joined the game as " + command.getPlayerColor(), username);
+        } else {
+            message = String.format("%s is observing the game", username);
+        }
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage);
 

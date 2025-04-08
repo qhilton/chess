@@ -105,4 +105,10 @@ public class ServerFacade {
         ConnectCommand command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, playerColor);
         webSocketCommunicator.send(new Gson().toJson(command));
     }
+
+    public void notifyObserve(String authToken, int gameID) throws Exception {
+        //UserGameCommand.CommandType commandType = UserGameCommand.CommandType.CONNECT;
+        ConnectCommand command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, null);
+        webSocketCommunicator.send(new Gson().toJson(command));
+    }
 }

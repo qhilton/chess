@@ -34,6 +34,7 @@ public class Client implements ServerMessageObserver {
     static int idKey;
     static ChessGame game = new ChessGame();
     static boolean isBoardDrawn = false;
+    static ChessGame.TeamColor teamColor;
 
 //    public static void main(String[] args) throws Exception, ResponseException {
 //        if (args.length == 1) {
@@ -208,7 +209,6 @@ public class Client implements ServerMessageObserver {
         scanner.nextLine();
         System.out.println("Enter team color (w/b)");
         playerColor = scanner.nextLine();
-        ChessGame.TeamColor teamColor = null;
         if (playerColor.equals("w")) {
             playerColor = "WHITE";
             teamColor = ChessGame.TeamColor.WHITE;
@@ -310,7 +310,7 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    private static void gamePlayMenu() {
+    private static void gamePlayMenu() throws Exception {
 //        if (firstJoin) {
 //            drawBoard(new ChessPosition(0, 0));
 //            firstJoin = false;
@@ -374,32 +374,34 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    private static void leaveGame() {
+    private static void leaveGame() throws Exception {
         System.out.println("Are you sure you want to leave the game? (y/n)");
         String confirmLeave = scanner.nextLine();
         if (confirmLeave.equals("y")) {
             System.out.println("Leaving game.");
 
-            //update game to remove player color from game
-            if (idKey != 500) {
-                LogoutResult result = server.joinGame(new JoinGameRequest(null, gameIDs.get(idKey)), authToken);
-                if (result.status() == 0) {
-                    System.out.println("Successfully left game");
-                    menu = "auth";
-                } else {
-                    if (result.status() == 400) {
-                        System.out.println("Invalid input. Please try again.");
-                    } else if (result.status() == 401) {
-                        System.out.println("Unauthorized request. Please try again.");
-                    } else if (result.status() == 403) {
-                        System.out.println("Color already taken. Please try again.");
-                    } else {
-                        System.out.println("Unexpected error. Please try again.");
-                    }
-                }
-            }
+            server.notifyLeave(authToken, gameIDs.get(idKey), teamColor);
 
-            //menu = "auth";
+            //update game to remove player color from game
+//            if (idKey != 500) {
+//                //LogoutResult result = server.joinGame(new JoinGameRequest(null, gameIDs.get(idKey)), authToken);
+//                if (result.status() == 0) {
+//                    System.out.println("Successfully left game");
+//                    menu = "auth";
+//                } else {
+//                    if (result.status() == 400) {
+//                        System.out.println("Invalid input. Please try again.");
+//                    } else if (result.status() == 401) {
+//                        System.out.println("Unauthorized request. Please try again.");
+//                    } else if (result.status() == 403) {
+//                        System.out.println("Color already taken. Please try again.");
+//                    } else {
+//                        System.out.println("Unexpected error. Please try again.");
+//                    }
+//                }
+//            }
+
+            menu = "auth";
         } else if (confirmLeave.equals("n")) {
             System.out.println("Staying in game.");
         } else {

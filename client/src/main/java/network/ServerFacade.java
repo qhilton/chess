@@ -9,6 +9,7 @@ import result.*;
 import ui.Client;
 import ui.ServerMessageObserver;
 import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveGameCommand;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
@@ -101,14 +102,17 @@ public class ServerFacade {
     }
 
     public void notifyJoin(String authToken, int gameID, ChessGame.TeamColor playerColor) throws Exception {
-        //UserGameCommand.CommandType commandType = UserGameCommand.CommandType.CONNECT;
         ConnectCommand command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, playerColor);
         webSocketCommunicator.send(new Gson().toJson(command));
     }
 
     public void notifyObserve(String authToken, int gameID) throws Exception {
-        //UserGameCommand.CommandType commandType = UserGameCommand.CommandType.CONNECT;
         ConnectCommand command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, null);
+        webSocketCommunicator.send(new Gson().toJson(command));
+    }
+
+    public void notifyLeave(String authToken, int gameID, ChessGame.TeamColor playerColor) throws Exception {
+        LeaveGameCommand command = new LeaveGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, playerColor);
         webSocketCommunicator.send(new Gson().toJson(command));
     }
 }

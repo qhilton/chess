@@ -1,5 +1,6 @@
 package handler;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
 
@@ -25,9 +26,9 @@ public class ConnectionManager {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                Boolean sameGame = gameConnector.get(excludeUserName) == gameConnector.get(c.username);
+                boolean sameGame = gameConnector.get(excludeUserName) == gameConnector.get(c.username);
                 if (!c.username.equals(excludeUserName) && sameGame) {
-                    c.send(message.toString());
+                    c.sendMessage(new Gson().toJson(message));
                 }
             } else {
                 removeList.add(c);

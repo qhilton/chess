@@ -36,7 +36,8 @@ public class WebSocketHandler {
             connections.add(username, command.getGameID(), session);
 
             switch (command.getCommandType()) {
-                case CONNECT -> connect(session, username, new Gson().fromJson(message, ConnectCommand.class));
+                case CONNECT -> connect(session, username, message);
+//                case CONNECT -> connect(session, username, new Gson().fromJson(message, ConnectCommand.class));
 //                case MAKE_MOVE -> makeMove(session, username, (MakeMoveCommand) command);
 //                case LEAVE -> leaveGame(session, username, (LeaveGameCommand) command);
 //                case RESIGN -> resign(session, username, (ResignCommand) command);
@@ -76,15 +77,15 @@ public class WebSocketHandler {
 //        }
 //    }
 //
-    public void connect(Session session, String username, ConnectCommand command) throws IOException, DataAccessException {
+    public void connect(Session session, String username, String commandMessage) throws IOException, DataAccessException {
 //        connections.add(username, command.getGameID(), session);
 //        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT)
 //        ConnectCommand connectCommand = new ConnectCommand(command.getCommandType(), command.getAuthToken(), command.getGameID())
+        ConnectCommand command = new Gson().fromJson(commandMessage, ConnectCommand.class);
         var message = String.format("%s joined the game as " + command.getPlayerColor(), username);
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage);
 
-        //TODO: need to send loadgamemessage using sendMessage
         GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
         LoadGameMessage load = new LoadGameMessage(gameData.game());
         sendMessage(session.getRemote(), load);

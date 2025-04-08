@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 
 public class Client implements ServerMessageObserver {
     static Scanner scanner = new Scanner(System.in);
@@ -31,13 +32,40 @@ public class Client implements ServerMessageObserver {
     static String playerColor;
     static Boolean firstJoin = true;
     static int idKey;
+    static ChessGame game = new ChessGame();
+    static boolean isBoardDrawn = false;
 
-    public static void main(String[] args) throws Exception, ResponseException {
-        if (args.length == 1) {
-            serverUrl = args[0];
-        }
-        server = new ServerFacade(serverUrl, new Client());
+//    public static void main(String[] args) throws Exception, ResponseException {
+//        if (args.length == 1) {
+//            serverUrl = args[0];
+//        }
+//        server = new ServerFacade(serverUrl, new Client());
+//        gameIDs = new HashMap<>();
+//
+//        System.out.println("Welcome to Chess!");
+//        menu = "unauth";
+//        while (loop) {
+//            switch (menu) {
+//                case ("unauth"):
+//                    unauthorizedMenu();
+//                    break;
+//                case ("auth"):
+//                    authorizedMenu();
+//                    break;
+//                case ("game"):
+//                    gamePlayMenu();
+//                    break;
+//            }
+//        }
+//    }
+
+    public Client(String serverUrl) throws Exception {
+        //this.server = server;
+        server = new ServerFacade(serverUrl, this);
         gameIDs = new HashMap<>();
+    }
+
+    public static void runMenu() throws ResponseException, Exception {
 
         System.out.println("Welcome to Chess!");
         menu = "unauth";
@@ -196,7 +224,7 @@ public class Client implements ServerMessageObserver {
                 server.makeConnection();
                 server.notifyJoin(authToken, gameIDs.get(idKey), teamColor);
                 System.out.println("Successfully joined game");
-                menu = "game";
+//                menu = "game";
             } else {
                 if (result.status() == 400) {
                     System.out.println("Invalid input. Please try again.");
@@ -280,10 +308,14 @@ public class Client implements ServerMessageObserver {
     }
 
     private static void gamePlayMenu() {
-        if (firstJoin) {
-            drawBoard(new ChessPosition(0, 0));
-            firstJoin = false;
-        }
+//        if (firstJoin) {
+//            drawBoard(new ChessPosition(0, 0));
+//            firstJoin = false;
+//        }
+//        if (isBoardDrawn) {
+//            drawBoard(new ChessPosition(0, 0));
+//            isBoardDrawn = false;
+//        }
         //menu = "auth";
 
         System.out.println("\nOptions");
@@ -318,13 +350,14 @@ public class Client implements ServerMessageObserver {
 
     private static void drawBoard(ChessPosition position) {
         if (playerColor.equals("WHITE") || playerColor.equals("Observe")) {
-            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.WHITE, position);
+            DrawChessBoard.drawChessBoard(game, ChessGame.TeamColor.WHITE, position);
             System.out.println("");
         }
         else if (playerColor.equals("BLACK")) {
-            DrawChessBoard.drawChessBoard(ChessGame.TeamColor.BLACK, position);
+            DrawChessBoard.drawChessBoard(game, ChessGame.TeamColor.BLACK, position);
             System.out.println("");
         }
+        isBoardDrawn = true;
     }
 
     private static void highlightMoves() {
@@ -454,7 +487,17 @@ public class Client implements ServerMessageObserver {
     }
 
     private void loadGame(ChessGame game) {
-        System.out.println("");
+        System.out.println("load");
+        this.game = game;
+//        menu = "game";
+        drawBoard(new ChessPosition(0, 0));
+
+        isBoardDrawn = true;
+//        CompletableFuture.runAsync(() -> drawBoard(new ChessPosition(0, 0)))
+//            .thenRun(() -> {
+//                // Switch to the game menu after drawing the board
+//                menu = "game";
+//            });
     }
 
 }

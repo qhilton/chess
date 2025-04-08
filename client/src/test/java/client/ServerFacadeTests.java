@@ -34,7 +34,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("http://localhost:" + port, new Client());
+        facade = new ServerFacade("http://localhost:" + port, new Client(""));
 
         user = new SQLUserDAO();
         auth = new SQLAuthDAO();

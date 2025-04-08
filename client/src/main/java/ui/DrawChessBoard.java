@@ -12,19 +12,18 @@ import java.util.ArrayList;
 import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
-    private static ChessGame game = new ChessGame();
     private static Integer[][] highlightBoard = new Integer[8][8];
 
-    public static void drawChessBoard(ChessGame.TeamColor teamColor, ChessPosition position) {
+    public static void drawChessBoard(ChessGame game, ChessGame.TeamColor teamColor, ChessPosition position) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
-        setHighlightBoard(position);
+        setHighlightBoard(game, position);
 
         drawHeaders(out, teamColor);
 
         for (int boardRow = 8; boardRow > 0; boardRow--) {
-            drawRow(out, boardRow, teamColor);
+            drawRow(game, out, boardRow, teamColor);
         }
 
         drawHeaders(out, teamColor);
@@ -52,19 +51,19 @@ public class DrawChessBoard {
         out.print(RESET_BG_COLOR);
     }
 
-    private static void drawRow(PrintStream out, int row, ChessGame.TeamColor teamColor) {
+    private static void drawRow(ChessGame game, PrintStream out, int row, ChessGame.TeamColor teamColor) {
         setBorder(out);
 
         if (teamColor == ChessGame.TeamColor.WHITE) {
             out.print(" " + (row) + " ");
             for (int col = 1; col < 9; col++) {
-                drawCol(out, row, col);
+                drawCol(game, out, row, col);
             }
         } else {
             row = fixRow(row);
             out.print(" " + (row) + " ");
             for (int col = 8; col > 0; col--) {
-                drawCol(out, row, col);
+                drawCol(game, out, row, col);
             }
         }
 
@@ -76,27 +75,27 @@ public class DrawChessBoard {
 
     }
 
-    private static void drawCol(PrintStream out, int row, int col) {
+    private static void drawCol(ChessGame game, PrintStream out, int row, int col) {
         if (row % 2 == 0) {
             if (col % 2 == 1) {
                 setWhite(out);
-                drawSquare(out, row, col);
+                drawSquare(game, out, row, col);
             } else {
                 setBlack(out);
-                drawSquare(out, row, col);
+                drawSquare(game, out, row, col);
             }
         } else {
             if (col % 2 == 1) {
                 setBlack(out);
-                drawSquare(out, row, col);
+                drawSquare(game, out, row, col);
             } else {
                 setWhite(out);
-                drawSquare(out, row, col);
+                drawSquare(game, out, row, col);
             }
         }
     }
 
-    private static void drawSquare(PrintStream out, int row, int col) {
+    private static void drawSquare(ChessGame game, PrintStream out, int row, int col) {
 
         setHighlightColor(out, row, col);
         ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row, col));
@@ -187,7 +186,7 @@ public class DrawChessBoard {
         out.print(SET_TEXT_COLOR_BLACK);
     }
 
-    private static void setHighlightBoard(ChessPosition position) {
+    private static void setHighlightBoard(ChessGame game, ChessPosition position) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 highlightBoard[i][j] = 0;

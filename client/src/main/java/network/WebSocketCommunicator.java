@@ -3,6 +3,10 @@ package network;
 import com.google.gson.Gson;
 import ui.Client;
 import ui.ServerMessageObserver;
+import websocket.commands.ConnectCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -25,13 +29,20 @@ public class WebSocketCommunicator extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    System.out.println("hello");
+                    System.out.println(serverMessage);
 //                    switch (serverMessage.getServerMessageType()) {
 //                        case (ServerMessage.ServerMessageType.LOAD_GAME):
 //                    }
 //                    if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
 //
 //                    }
-                    observer.notify(serverMessage);
+                    switch (serverMessage.getServerMessageType()) {
+//                        case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
+//                        case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
+                        case LOAD_GAME -> observer.notify(new Gson().fromJson(message, LoadGameMessage.class));
+                    }
+//                    observer.notify(serverMessage);
                 }
         });
     }

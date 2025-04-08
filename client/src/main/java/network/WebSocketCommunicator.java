@@ -38,8 +38,8 @@ public class WebSocketCommunicator extends Endpoint {
 //
 //                    }
                     switch (serverMessage.getServerMessageType()) {
-//                        case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
-//                        case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());
+                        case NOTIFICATION -> observer.notify(new Gson().fromJson(message, NotificationMessage.class));
+                        case ERROR -> observer.notify(new Gson().fromJson(message, ErrorMessage.class));
                         case LOAD_GAME -> observer.notify(new Gson().fromJson(message, LoadGameMessage.class));
                     }
 //                    observer.notify(serverMessage);

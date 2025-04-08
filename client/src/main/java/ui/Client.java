@@ -479,6 +479,7 @@ public class Client implements ServerMessageObserver {
     }
 
     private void displayNotification(String message) {
+        System.out.println("notification");
         System.out.println(message);
     }
 

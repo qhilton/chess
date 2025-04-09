@@ -222,7 +222,6 @@ public class Client implements ServerMessageObserver {
         System.out.println("Enter game ID");
         int gameID = scanner.nextInt();
         scanner.nextLine();
-
         playerColor = "Observe";
 
         int idKey = updateGameID(gameID);
@@ -239,7 +238,6 @@ public class Client implements ServerMessageObserver {
 
     private static void listGames() {
         System.out.println("Listing games");
-
         ListGamesResult result = server.listGames(authToken);
         data = (ArrayList) result.games();
         if (data.size() == 0) {
@@ -248,8 +246,7 @@ public class Client implements ServerMessageObserver {
             System.out.println("Unauthorized request. Please try again.");
         } else if (data.get(0).gameID() == 500) {
             System.out.println("Unexpected error. Please try again.");
-        }
-        else {
+        } else {
             for (int i = 0; i < data.size(); i++) {
                 System.out.print(i+1 + ". " + data.get(i).gameName());
                 if (data.get(i).whiteUsername() != null) {
@@ -269,7 +266,6 @@ public class Client implements ServerMessageObserver {
 
     private static void logout() {
         System.out.println("Logging out");
-
         LogoutResult result = server.logout(new LogoutRequest(authToken));
         if (result.status() == 0) {
             System.out.println("Successfully logged out");
@@ -312,7 +308,6 @@ public class Client implements ServerMessageObserver {
                 resign();
                 break;
         }
-
     }
 
     private static void makeMove() throws Exception {
@@ -322,7 +317,6 @@ public class Client implements ServerMessageObserver {
             String start = scanner.nextLine();
             System.out.println("Enter ending position (Ex d4)");
             String end = scanner.nextLine();
-
             ChessPosition startPosition = validatePiece(start);
             if (startPosition == null) {
                 System.out.println("Invalid starting input. Please try again.");
@@ -331,34 +325,35 @@ public class Client implements ServerMessageObserver {
             if (endPosition == null) {
                 System.out.println("Invalid ending input. Please try again.");
             }
-
             if (startPosition != null && endPosition != null) {
-
-                if (game.getBoard().getPiece(startPosition) != null) {
-                    if (teamColor == ChessGame.TeamColor.WHITE) {
-                        if (game.getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 8) {
-                            setPromotionPiece(startPosition, endPosition);
-                        } else {
-                            ChessMove move = new ChessMove(startPosition, endPosition, null);
-                            server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
-                        }
-                    } else if (teamColor == ChessGame.TeamColor.BLACK) {
-                        if (game.getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 1) {
-                            setPromotionPiece(startPosition, endPosition);
-                        } else {
-                            ChessMove move = new ChessMove(startPosition, endPosition, null);
-                            server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
-                        }
-                    } else {
-                        System.out.println("Observers cannot make a move.");
-                    }
-                }
-                else {
-                    System.out.println("Error: not a valid move");
-                }
+                handleMove(startPosition, endPosition);
             }
         } else {
             System.out.println("Game is over. Cannot make a move.");
+        }
+    }
+
+    private static void handleMove(ChessPosition startPosition, ChessPosition endPosition) throws Exception {
+        if (game.getBoard().getPiece(startPosition) != null) {
+            if (teamColor == ChessGame.TeamColor.WHITE) {
+                if (game.getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 8) {
+                    setPromotionPiece(startPosition, endPosition);
+                } else {
+                    ChessMove move = new ChessMove(startPosition, endPosition, null);
+                    server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
+                }
+            } else if (teamColor == ChessGame.TeamColor.BLACK) {
+                if (game.getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 1) {
+                    setPromotionPiece(startPosition, endPosition);
+                } else {
+                    ChessMove move = new ChessMove(startPosition, endPosition, null);
+                    server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
+                }
+            } else {
+                System.out.println("Observers cannot make a move.");
+            }
+        } else {
+            System.out.println("Error: not a valid move");
         }
     }
 
@@ -386,15 +381,13 @@ public class Client implements ServerMessageObserver {
         } else {
             return new ChessPiece(teamColor, null);
         }
-
     }
 
     private static void drawBoard(ChessPosition position) {
         if (playerColor.equals("WHITE") || playerColor.equals("Observe")) {
             DrawChessBoard.drawChessBoard(game, ChessGame.TeamColor.WHITE, position);
             System.out.println("");
-        }
-        else if (playerColor.equals("BLACK")) {
+        } else if (playerColor.equals("BLACK")) {
             DrawChessBoard.drawChessBoard(game, ChessGame.TeamColor.BLACK, position);
             System.out.println("");
         }
@@ -430,7 +423,6 @@ public class Client implements ServerMessageObserver {
         String confirmLeave = scanner.nextLine();
         if (confirmLeave.equals("y")) {
             System.out.println("Resigning from the game.");
-
             liveGame = false;
             server.notifyResign(authToken, gameIDs.get(idKey), teamColor);
         } else if (confirmLeave.equals("n")) {
@@ -443,61 +435,34 @@ public class Client implements ServerMessageObserver {
     private static ChessPosition validatePiece(String positionString) {
         String colPos = "";
         String rowPos = "";
-
         if (positionString.length() > 1) {
             colPos = positionString.substring(0, 1);
             rowPos = positionString.substring(1, 2);
         }
         int row = convertRow(rowPos);
         int col = convertCol(colPos);
-
         if (row == 0 || col == 0) {
             return null;
         }
-
         return new ChessPosition(row, col);
     }
 
     private static int convertCol(String colPos) {
         int col = 0;
-        if (colPos.equals("a")) {
-            col = 1;
-        } else if (colPos.equals("b")) {
-            col = 2;
-        } else if (colPos.equals("c")) {
-            col = 3;
-        } else if (colPos.equals("d")) {
-            col = 4;
-        } else if (colPos.equals("e")) {
-            col = 5;
-        } else if (colPos.equals("f")) {
-            col = 6;
-        } else if (colPos.equals("g")) {
-            col = 7;
-        } else if (colPos.equals("h")) {
-            col = 8;
+        if (colPos.length() == 1 && colPos.charAt(0) >= 'a' && colPos.charAt(0) <= 'h') {
+            col = colPos.charAt(0) - 'a' + 1;
         }
         return col;
     }
 
     private static int convertRow(String rowPos) {
         int row = 0;
-        if (rowPos.equals("1")) {
-            row = 1;
-        } else if (rowPos.equals("2")) {
-            row = 2;
-        } else if (rowPos.equals("3")) {
-            row = 3;
-        } else if (rowPos.equals("4")) {
-            row = 4;
-        } else if (rowPos.equals("5")) {
-            row = 5;
-        } else if (rowPos.equals("6")) {
-            row = 6;
-        } else if (rowPos.equals("7")) {
-            row = 7;
-        } else if (rowPos.equals("8")) {
-            row = 8;
+        try {
+            int parsedRow = Integer.parseInt(rowPos);
+            if (parsedRow >= 1 && parsedRow <= 8) {
+                row = parsedRow;
+            }
+        } catch (NumberFormatException e) {
         }
         return row;
     }
@@ -531,7 +496,4 @@ public class Client implements ServerMessageObserver {
         game = newGame;
         drawBoard(new ChessPosition(0, 0));
     }
-
 }
-
-

@@ -20,12 +20,6 @@ public class MakeMoveCommand extends UserGameCommand {
     }
 
     public ChessGame.TeamColor getPlayerColor() {
-//        if (playerColor == ChessGame.TeamColor.WHITE) {
-//            return "white";
-//        } else if (playerColor == ChessGame.TeamColor.BLACK) {
-//            return "black";
-//        }
-//        return "";
         return playerColor;
     }
 }

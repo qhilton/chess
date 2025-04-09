@@ -78,13 +78,14 @@ public class WebSocketHandler {
 
     public void makeMove(Session session, String username, String commandMessage) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(commandMessage, MakeMoveCommand.class);
-
+        String authToken = command.getAuthToken();
+        int gameID = command.getGameID();
         // FOR TESTING ONLY
         ChessMove move = command.getMove();
         if (command.getPlayerColor() == null && (username.equals("white") || username.equals("white2"))) {
-            command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, command.getAuthToken(), command.getGameID(), move, ChessGame.TeamColor.WHITE);
+            command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move, ChessGame.TeamColor.WHITE);
         } else if (command.getPlayerColor() == null && username.equals("black")) {
-            command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, command.getAuthToken(), command.getGameID(), move, ChessGame.TeamColor.BLACK);
+            command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move, ChessGame.TeamColor.BLACK);
         }
 
         String message = "";
@@ -98,7 +99,7 @@ public class WebSocketHandler {
         }
 
         GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
-        int gameID = gameData.gameID();
+        gameID = gameData.gameID();
         String whiteUsername = gameData.whiteUsername();
         String blackUsername = gameData.blackUsername();
         String gameName = gameData.gameName();

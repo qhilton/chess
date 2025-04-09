@@ -176,7 +176,6 @@ public class Client implements ServerMessageObserver {
 
     private static void playGame() throws Exception {
         listGames();
-
         System.out.println("\nJoining game");
         System.out.println("Enter game ID");
         int gameID = scanner.nextInt();
@@ -217,7 +216,6 @@ public class Client implements ServerMessageObserver {
 
     private static void observeGame() throws Exception {
         listGames();
-
         System.out.println("Observing game");
         System.out.println("Enter game ID");
         int gameID = scanner.nextInt();
@@ -494,7 +492,12 @@ public class Client implements ServerMessageObserver {
 
     private void loadGame(ChessGame newGame) {
         game = newGame;
-        System.out.println("liveGame" + game.getLiveGame());
-        drawBoard(new ChessPosition(0, 0));
+        if (game.getLiveGame()) {
+            drawBoard(new ChessPosition(0, 0));
+        } else if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            drawBoard(new ChessPosition(0, 0));
+        } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            drawBoard(new ChessPosition(0, 0));
+        }
     }
 }

@@ -138,13 +138,12 @@ public class WebSocketHandler {
                 throw new Exception("not a valid move");
             }
         } else {
-            throw new DataAccessException("game is already over");
+            throw new Exception("game is already over");
         }
 
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage, false);
 
-        //add check stuff here
         if (otherTeamColor != null && game.isInCheckmate(otherTeamColor)) {
             message = String.format("%s is in checkmate!\n" + username + " wins!", otherPlayer);
             serverMessage = new NotificationMessage(message);
@@ -189,16 +188,9 @@ public class WebSocketHandler {
             Server.gameHandler.gameService.game.updateGame(gameID, newData);
         }
 
-        System.out.println("not here");
-
         var serverMessage = new NotificationMessage(message);
-
-        System.out.println("message " + message);
-        System.out.println("serverMessage " + serverMessage);
-
         connections.broadcast(username, serverMessage, false);
         connections.remove(username);
-        System.out.println("\n");
     }
 
     public void resign(Session session, String username, String commandMessage) throws Exception {
@@ -231,6 +223,9 @@ public class WebSocketHandler {
             game.disableGame();
             GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
             Server.gameHandler.gameService.game.updateGame(gameID, newData);
+
+            LoadGameMessage load = new LoadGameMessage(newData.game());
+            connections.broadcast(username, load, true);
         } else {
             throw new Exception("game is already over");
         }

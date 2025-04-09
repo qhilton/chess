@@ -20,7 +20,6 @@ public class ConnectionManager {
     }
 
     public void remove(String username) {
-        System.out.println("removing " + username);
         connections.remove(username);
         gameConnector.remove(username);
     }
@@ -28,11 +27,7 @@ public class ConnectionManager {
     public void broadcast(String excludeUserName, ServerMessage message, boolean allPlayers) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
-            //boolean sameGame = gameConnector.contains(excludeUserName);
             boolean sameGame = gameConnector.get(excludeUserName) == gameConnector.get(c.username);
-            System.out.println("connection " + c.username);
-            System.out.println("currentUserGameID " + gameConnector.get(excludeUserName));
-            System.out.println("cGameID " + gameConnector.get(c.username));
             if (c.session.isOpen() && !allPlayers) {
                 if (!c.username.equals(excludeUserName) && sameGame) {
                     c.sendMessage(new Gson().toJson(message));

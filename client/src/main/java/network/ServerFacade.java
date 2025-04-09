@@ -1,6 +1,8 @@
 package network;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import execption.ResponseException;
 import model.GameData;
@@ -8,10 +10,7 @@ import request.*;
 import result.*;
 import ui.Client;
 import ui.ServerMessageObserver;
-import websocket.commands.ConnectCommand;
-import websocket.commands.LeaveGameCommand;
-import websocket.commands.ResignCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -109,6 +108,11 @@ public class ServerFacade {
 
     public void notifyObserve(String authToken, int gameID) throws Exception {
         ConnectCommand command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, null);
+        webSocketCommunicator.send(new Gson().toJson(command));
+    }
+
+    public void notifyMove(String authToken, int gameID, ChessMove move, ChessGame.TeamColor playerColor) throws Exception {
+        MakeMoveCommand command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move, playerColor);
         webSocketCommunicator.send(new Gson().toJson(command));
     }
 

@@ -119,8 +119,6 @@ public class WebSocketHandler {
             throw new DataAccessException("game is already over");
         }
 
-
-
         String message = "";
         String startPosition = convertPosition(move.getStartPosition());
         String endPosition = convertPosition(move.getEndPosition());
@@ -133,8 +131,30 @@ public class WebSocketHandler {
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage, false);
 
-
         //add check stuff here
+        ChessGame.TeamColor otherTeamColor = null;
+        String otherColor = "";
+        if (command.getPlayerColor() == ChessGame.TeamColor.WHITE) {
+            otherTeamColor = ChessGame.TeamColor.BLACK;
+            otherColor = "black";
+        } else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK) {
+            otherTeamColor = ChessGame.TeamColor.WHITE;
+            otherColor = "white";
+        }
+
+        if (otherTeamColor != null && game.isInCheck(otherTeamColor)) {
+            message = String.format("%s is in check! ", otherColor);
+            serverMessage = new NotificationMessage(message);
+            connections.broadcast(username, serverMessage, true);
+        } else if (otherTeamColor != null && game.isInCheckmate(otherTeamColor)) {
+            message = String.format("%s is in checkmate! ", otherColor);
+            serverMessage = new NotificationMessage(message);
+            connections.broadcast(username, serverMessage, true);
+        } else if (otherTeamColor != null && game.isInStalemate(otherTeamColor)) {
+            message = "The game is in a stalemate!";
+            serverMessage = new NotificationMessage(message);
+            connections.broadcast(username, serverMessage, true);
+        }
     }
 
 

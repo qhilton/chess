@@ -1,7 +1,7 @@
 package ui;
 
-import chess.ChessGame;
-import chess.ChessPosition;
+import chess.*;
+import chess.PawnMovesCalculator;
 import execption.ResponseException;
 import model.GameData;
 import network.ServerFacade;
@@ -336,7 +336,7 @@ public class Client implements ServerMessageObserver {
                 drawBoard(new ChessPosition(0, 0));
                 break;
             case ("2"):
-                System.out.println("not implemented");
+                makeMove();
                 break;
             case ("3"):
                 highlightMoves();
@@ -347,6 +347,66 @@ public class Client implements ServerMessageObserver {
             case ("5"):
                 resign();
                 break;
+        }
+
+    }
+
+    private static void makeMove() throws Exception {
+        if (game.getLiveGame()) {
+            System.out.println("Making a move.");
+            System.out.println("Enter starting position (Ex d2)");
+            String start = scanner.nextLine();
+            System.out.println("Enter ending position (Ex d4)");
+            String end = scanner.nextLine();
+
+            ChessPosition startPosition = validatePiece(start);
+            if (startPosition == null) {
+                System.out.println("Invalid starting input. Please try again.");
+            }
+            ChessPosition endPosition = validatePiece(end);
+            if (endPosition == null) {
+                System.out.println("Invalid ending input. Please try again.");
+            }
+
+            if (teamColor == ChessGame.TeamColor.WHITE) {
+                if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 8) {
+                    setPromotionPiece(startPosition, endPosition);
+                }
+            } else if (teamColor == ChessGame.TeamColor.BLACK) {
+                if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 1) {
+                    setPromotionPiece(startPosition, endPosition);
+                }
+            } else {
+                System.out.println("Observers cannot make a move.");
+            }
+        } else {
+            System.out.println("Game is over. Cannot make a move.");
+        }
+    }
+
+    private static void setPromotionPiece(ChessPosition startPosition, ChessPosition endPosition) throws Exception {
+        System.out.println("Enter pawn promotion piece (Q, R, B, N)");
+        String promo = scanner.nextLine();
+        ChessPiece promotionPiece = validPromoInput(promo);
+        if (promotionPiece == null) {
+            System.out.println("Invalid promotion input. Please try again.");
+        } else {
+            ChessMove move = new ChessMove(startPosition, endPosition, promotionPiece.getPieceType());
+            server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
+        }
+    }
+
+    private static ChessPiece validPromoInput(String input) {
+        if (input.equals("Q")) {
+            return new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
+        } else if (input.equals("R")) {
+            return new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
+        } else if (input.equals("B")) {
+            return new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
+        } else if (input.equals("N")) {
+            return new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
+        } else {
+            return new ChessPiece(teamColor, null);
         }
 
     }
@@ -469,6 +529,7 @@ public class Client implements ServerMessageObserver {
 
     @Override
     public void notify(ServerMessage message) {
+        System.out.println("");
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
             case ERROR -> displayError(((ErrorMessage) message).getErrorMessage());

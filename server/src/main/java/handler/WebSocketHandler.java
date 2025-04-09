@@ -106,13 +106,13 @@ public class WebSocketHandler {
         ChessGame game = gameData.game();
 
         ChessGame.TeamColor otherTeamColor = null;
-        String otherColor = "";
+        String otherPlayer = "";
         if (command.getPlayerColor() == ChessGame.TeamColor.WHITE) {
             otherTeamColor = ChessGame.TeamColor.BLACK;
-            otherColor = "black";
+            otherPlayer = blackUsername;
         } else if (command.getPlayerColor() == ChessGame.TeamColor.BLACK) {
             otherTeamColor = ChessGame.TeamColor.WHITE;
-            otherColor = "white";
+            otherPlayer = whiteUsername;
         }
 
         if (game.getLiveGame()) {
@@ -141,17 +141,16 @@ public class WebSocketHandler {
             throw new DataAccessException("game is already over");
         }
 
-
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage, false);
 
         //add check stuff here
         if (otherTeamColor != null && game.isInCheckmate(otherTeamColor)) {
-            message = String.format("%s is in checkmate!\n" + username + " wins!", otherColor);
+            message = String.format("%s is in checkmate!\n" + username + " wins!", otherPlayer);
             serverMessage = new NotificationMessage(message);
             connections.broadcast(username, serverMessage, true);
         } else if (otherTeamColor != null && game.isInCheck(otherTeamColor)) {
-            message = String.format("%s is in check!", otherColor);
+            message = String.format("%s is in check!", otherPlayer);
             serverMessage = new NotificationMessage(message);
             connections.broadcast(username, serverMessage, true);
         } else if (otherTeamColor != null && game.isInStalemate(otherTeamColor)) {
@@ -169,6 +168,7 @@ public class WebSocketHandler {
         int gameID = gameData.gameID();
         String gameName = gameData.gameName();
         ChessGame game = gameData.game();
+
         String message = String.format("%s left the game", username);
 
         // FOR TESTING ONLY
@@ -178,6 +178,7 @@ public class WebSocketHandler {
             command = new LeaveGameCommand(UserGameCommand.CommandType.LEAVE, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.BLACK);
         }
 
+        //GameData newData = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameName, game);
         if (command.getPlayerColor().equals("white")) {
             String blackUsername = gameData.blackUsername();
             GameData newData = new GameData(gameID, null, blackUsername, gameName, game);
@@ -188,9 +189,16 @@ public class WebSocketHandler {
             Server.gameHandler.gameService.game.updateGame(gameID, newData);
         }
 
+        System.out.println("not here");
+
         var serverMessage = new NotificationMessage(message);
+
+        System.out.println("message " + message);
+        System.out.println("serverMessage " + serverMessage);
+
         connections.broadcast(username, serverMessage, false);
         connections.remove(username);
+        System.out.println("\n");
     }
 
     public void resign(Session session, String username, String commandMessage) throws Exception {
@@ -212,21 +220,21 @@ public class WebSocketHandler {
         }
 
         if (command.getPlayerColor().equals("white")) {
-            message = String.format("%s resigned from the game%nBlack wins!", username);
+            message = String.format("%s resigned from the game%n" + blackUsername + " wins!", username);
         } else if (command.getPlayerColor().equals("black")) {
-            message = String.format("%s resigned from the game%nWhite wins!", username);
+            message = String.format("%s resigned from the game%n" + whiteUsername + " wins!", username);
         } else {
             throw new Exception("observers are unable to resign");
         }
 
         if (game.getLiveGame()) {
             game.disableGame();
+            GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+            Server.gameHandler.gameService.game.updateGame(gameID, newData);
         } else {
             throw new Exception("game is already over");
         }
 
-        GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
-        Server.gameHandler.gameService.game.updateGame(gameID, newData);
 
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(username, serverMessage, true);

@@ -224,7 +224,7 @@ public class Client implements ServerMessageObserver {
         scanner.nextLine();
         playerColor = "Observe";
 
-        int idKey = updateGameID(gameID);
+        idKey = updateGameID(gameID);
         if (idKey != 500) {
             server.makeConnection();
             server.notifyObserve(authToken, gameIDs.get(idKey));
@@ -494,6 +494,7 @@ public class Client implements ServerMessageObserver {
 
     private void loadGame(ChessGame newGame) {
         game = newGame;
+        System.out.println("liveGame" + game.getLiveGame());
         drawBoard(new ChessPosition(0, 0));
     }
 }

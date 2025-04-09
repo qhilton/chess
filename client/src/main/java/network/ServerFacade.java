@@ -2,18 +2,15 @@ package network;
 
 import chess.ChessGame;
 import chess.ChessMove;
-import chess.ChessPosition;
 import com.google.gson.Gson;
 import execption.ResponseException;
 import model.GameData;
 import request.*;
 import result.*;
-import ui.Client;
 import ui.ServerMessageObserver;
 import websocket.commands.*;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -27,7 +24,6 @@ public class ServerFacade {
         serverUrl = url;
         httpCommunicator = new HttpCommunicator(serverUrl);
         this.observer = observer;
-        //webSocketCommunicator = new WebSocketCommunicator(serverUrl, observer);
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException, IOException {

@@ -33,35 +33,9 @@ public class Client implements ServerMessageObserver {
     static Boolean liveGame = true;
     static int idKey;
     static ChessGame game = new ChessGame();
-    static boolean isBoardDrawn = false;
     static ChessGame.TeamColor teamColor;
 
-//    public static void main(String[] args) throws Exception, ResponseException {
-//        if (args.length == 1) {
-//            serverUrl = args[0];
-//        }
-//        server = new ServerFacade(serverUrl, new Client());
-//        gameIDs = new HashMap<>();
-//
-//        System.out.println("Welcome to Chess!");
-//        menu = "unauth";
-//        while (loop) {
-//            switch (menu) {
-//                case ("unauth"):
-//                    unauthorizedMenu();
-//                    break;
-//                case ("auth"):
-//                    authorizedMenu();
-//                    break;
-//                case ("game"):
-//                    gamePlayMenu();
-//                    break;
-//            }
-//        }
-//    }
-
     public Client(String serverUrl) throws Exception {
-        //this.server = server;
         server = new ServerFacade(serverUrl, this);
         gameIDs = new HashMap<>();
     }
@@ -203,7 +177,7 @@ public class Client implements ServerMessageObserver {
     private static void playGame() throws Exception {
         listGames();
 
-        System.out.println("Joining game");
+        System.out.println("\nJoining game");
         System.out.println("Enter game ID");
         int gameID = scanner.nextInt();
         scanner.nextLine();
@@ -311,16 +285,6 @@ public class Client implements ServerMessageObserver {
     }
 
     private static void gamePlayMenu() throws Exception {
-//        if (firstJoin) {
-//            drawBoard(new ChessPosition(0, 0));
-//            firstJoin = false;
-//        }
-//        if (isBoardDrawn) {
-//            drawBoard(new ChessPosition(0, 0));
-//            isBoardDrawn = false;
-//        }
-        //menu = "auth";
-
         System.out.println("\nOptions");
         System.out.println("1. Redraw Chess Board");
         System.out.println("2. Make Move");
@@ -368,16 +332,31 @@ public class Client implements ServerMessageObserver {
                 System.out.println("Invalid ending input. Please try again.");
             }
 
-            if (teamColor == ChessGame.TeamColor.WHITE) {
-                if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 8) {
-                    setPromotionPiece(startPosition, endPosition);
+            if (startPosition != null && endPosition != null) {
+
+                if (game.getBoard().getPiece(startPosition) != null) {
+                    if (teamColor == ChessGame.TeamColor.WHITE) {
+                        if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 8) {
+                            setPromotionPiece(startPosition, endPosition);
+                        } else {
+                            ChessMove move = new ChessMove(startPosition, endPosition, null);
+                            server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
+                        }
+                    } else if (teamColor == ChessGame.TeamColor.BLACK) {
+
+                        if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 1) {
+                            setPromotionPiece(startPosition, endPosition);
+                        } else {
+                            ChessMove move = new ChessMove(startPosition, endPosition, null);
+                            server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
+                        }
+                    } else {
+                        System.out.println("Observers cannot make a move.");
+                    }
                 }
-            } else if (teamColor == ChessGame.TeamColor.BLACK) {
-                if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 1) {
-                    setPromotionPiece(startPosition, endPosition);
+                else {
+                    System.out.println("Error: not a valid move");
                 }
-            } else {
-                System.out.println("Observers cannot make a move.");
             }
         } else {
             System.out.println("Game is over. Cannot make a move.");
@@ -420,7 +399,6 @@ public class Client implements ServerMessageObserver {
             DrawChessBoard.drawChessBoard(game, ChessGame.TeamColor.BLACK, position);
             System.out.println("");
         }
-        isBoardDrawn = true;
     }
 
     private static void highlightMoves() {
@@ -464,8 +442,13 @@ public class Client implements ServerMessageObserver {
     }
 
     private static ChessPosition validatePiece(String positionString) {
-        String colPos = positionString.substring(0, 1);
-        String rowPos = positionString.substring(1, 2);
+        String colPos = "";
+        String rowPos = "";
+
+        if (positionString.length() > 1) {
+            colPos = positionString.substring(0, 1);
+            rowPos = positionString.substring(1, 2);
+        }
         int row = convertRow(rowPos);
         int col = convertCol(colPos);
 
@@ -545,17 +528,9 @@ public class Client implements ServerMessageObserver {
         System.out.println(message);
     }
 
-    private void loadGame(ChessGame game) {
-        this.game = game;
-//        menu = "game";
+    private void loadGame(ChessGame newGame) {
+        game = newGame;
         drawBoard(new ChessPosition(0, 0));
-
-        isBoardDrawn = true;
-//        CompletableFuture.runAsync(() -> drawBoard(new ChessPosition(0, 0)))
-//            .thenRun(() -> {
-//                // Switch to the game menu after drawing the board
-//                menu = "game";
-//            });
     }
 
 }

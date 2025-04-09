@@ -12,16 +12,13 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
-import spark.Spark;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-import javax.management.Notification;
 import java.io.IOException;
-import java.util.HashMap;
 
 @WebSocket
 public class WebSocketHandler {
@@ -38,7 +35,6 @@ public class WebSocketHandler {
 
             switch (command.getCommandType()) {
                 case CONNECT -> connect(session, username, message);
-//                case CONNECT -> connect(session, username, new Gson().fromJson(message, ConnectCommand.class));
                 case MAKE_MOVE -> makeMove(session, username, message);
                 case LEAVE -> leaveGame(session, username, message);
                 case RESIGN -> resign(session, username, message);
@@ -80,7 +76,7 @@ public class WebSocketHandler {
         connections.broadcast(username, serverMessage, false);
     }
 
-    public void makeMove(Session session, String username, String commandMessage) throws IOException, DataAccessException {
+    public void makeMove(Session session, String username, String commandMessage) throws Exception {
         MakeMoveCommand command = new Gson().fromJson(commandMessage, MakeMoveCommand.class);
 
         // FOR TESTING ONLY
@@ -91,34 +87,6 @@ public class WebSocketHandler {
             command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, command.getAuthToken(), command.getGameID(), move, ChessGame.TeamColor.BLACK);
         }
 
-        GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
-        int gameID = gameData.gameID();
-        String whiteUsername = gameData.whiteUsername();
-        String blackUsername = gameData.blackUsername();
-        String gameName = gameData.gameName();
-        ChessGame game = gameData.game();
-        if (game.getLiveGame()) {
-            try {
-                if (game.getTeamTurn() != command.getPlayerColor()) {
-                    throw new DataAccessException("not your turn");
-                }
-                game.makeMove(move);
-
-                GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
-                Server.gameHandler.gameService.game.updateGame(gameID, newData);
-
-                LoadGameMessage load = new LoadGameMessage(newData.game());
-                sendMessage(session.getRemote(), load);
-                connections.broadcast(username, load, false);
-            } catch (DataAccessException ex) {
-                throw new DataAccessException(ex.getMessage());
-            } catch (InvalidMoveException e) {
-                throw new DataAccessException("not a valid move");
-            }
-        } else {
-            throw new DataAccessException("game is already over");
-        }
-
         String message = "";
         String startPosition = convertPosition(move.getStartPosition());
         String endPosition = convertPosition(move.getEndPosition());
@@ -126,12 +94,16 @@ public class WebSocketHandler {
         if (command.getPlayerColor() != null) {
             message = String.format("%s moved from " + startPosition + " to " + endPosition, username);
         } else {
-            throw new DataAccessException("observers cannot make moves");
+            throw new Exception("observers cannot make moves");
         }
-        var serverMessage = new NotificationMessage(message);
-        connections.broadcast(username, serverMessage, false);
 
-        //add check stuff here
+        GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
+        int gameID = gameData.gameID();
+        String whiteUsername = gameData.whiteUsername();
+        String blackUsername = gameData.blackUsername();
+        String gameName = gameData.gameName();
+        ChessGame game = gameData.game();
+
         ChessGame.TeamColor otherTeamColor = null;
         String otherColor = "";
         if (command.getPlayerColor() == ChessGame.TeamColor.WHITE) {
@@ -142,12 +114,43 @@ public class WebSocketHandler {
             otherColor = "white";
         }
 
-        if (otherTeamColor != null && game.isInCheck(otherTeamColor)) {
-            message = String.format("%s is in check! ", otherColor);
+        if (game.getLiveGame()) {
+            try {
+                if (game.getTeamTurn() != command.getPlayerColor()) {
+                    throw new Exception("not your turn");
+                }
+                game.makeMove(move);
+
+                if (game.isInStalemate(otherTeamColor) || game.isInCheckmate(otherTeamColor)) {
+                    game.disableGame();
+                }
+
+                GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+                Server.gameHandler.gameService.game.updateGame(gameID, newData);
+
+                LoadGameMessage load = new LoadGameMessage(newData.game());
+                sendMessage(session.getRemote(), load);
+                connections.broadcast(username, load, false);
+            } catch (DataAccessException ex) {
+                throw new DataAccessException(ex.getMessage());
+            } catch (InvalidMoveException e) {
+                throw new Exception("not a valid move");
+            }
+        } else {
+            throw new DataAccessException("game is already over");
+        }
+
+
+        var serverMessage = new NotificationMessage(message);
+        connections.broadcast(username, serverMessage, false);
+
+        //add check stuff here
+        if (otherTeamColor != null && game.isInCheckmate(otherTeamColor)) {
+            message = String.format("%s is in checkmate!\n" + username + " wins!", otherColor);
             serverMessage = new NotificationMessage(message);
             connections.broadcast(username, serverMessage, true);
-        } else if (otherTeamColor != null && game.isInCheckmate(otherTeamColor)) {
-            message = String.format("%s is in checkmate! ", otherColor);
+        } else if (otherTeamColor != null && game.isInCheck(otherTeamColor)) {
+            message = String.format("%s is in check!", otherColor);
             serverMessage = new NotificationMessage(message);
             connections.broadcast(username, serverMessage, true);
         } else if (otherTeamColor != null && game.isInStalemate(otherTeamColor)) {
@@ -229,11 +232,6 @@ public class WebSocketHandler {
     }
 
     public void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
-//        if (message.getServerMessageType() != ServerMessage.ServerMessageType.ERROR) {
-//            remote.sendString(new Gson().toJson(message));
-//        } else {
-//            remote.sendString(message);
-//        }
         remote.sendString(new Gson().toJson(message));
     }
 
@@ -266,8 +264,4 @@ public class WebSocketHandler {
     private static String convertRow(int rowPos) {
         return String.valueOf(rowPos);
     }
-
-//    public void saveSession(int gameID, Session session) {
-//        sessions.put(gameID, session);
-//    }
 }

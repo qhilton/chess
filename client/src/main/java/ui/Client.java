@@ -336,15 +336,14 @@ public class Client implements ServerMessageObserver {
 
                 if (game.getBoard().getPiece(startPosition) != null) {
                     if (teamColor == ChessGame.TeamColor.WHITE) {
-                        if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 8) {
+                        if (game.getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 8) {
                             setPromotionPiece(startPosition, endPosition);
                         } else {
                             ChessMove move = new ChessMove(startPosition, endPosition, null);
                             server.notifyMove(authToken, gameIDs.get(idKey), move, teamColor);
                         }
                     } else if (teamColor == ChessGame.TeamColor.BLACK) {
-
-                        if (game.getBoard().getPiece(startPosition).equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 1) {
+                        if (game.getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) && endPosition.getRow() == 1) {
                             setPromotionPiece(startPosition, endPosition);
                         } else {
                             ChessMove move = new ChessMove(startPosition, endPosition, null);
@@ -367,7 +366,7 @@ public class Client implements ServerMessageObserver {
         System.out.println("Enter pawn promotion piece (Q, R, B, N)");
         String promo = scanner.nextLine();
         ChessPiece promotionPiece = validPromoInput(promo);
-        if (promotionPiece == null) {
+        if (promotionPiece.getPieceType() == null) {
             System.out.println("Invalid promotion input. Please try again.");
         } else {
             ChessMove move = new ChessMove(startPosition, endPosition, promotionPiece.getPieceType());

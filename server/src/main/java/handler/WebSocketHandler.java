@@ -1,6 +1,9 @@
 package handler;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.GameData;
@@ -36,7 +39,7 @@ public class WebSocketHandler {
             switch (command.getCommandType()) {
                 case CONNECT -> connect(session, username, message);
 //                case CONNECT -> connect(session, username, new Gson().fromJson(message, ConnectCommand.class));
-//                case MAKE_MOVE -> makeMove(session, username, (MakeMoveCommand) command);
+                case MAKE_MOVE -> makeMove(session, username, message);
                 case LEAVE -> leaveGame(session, username, message);
                 case RESIGN -> resign(session, username, message);
             }
@@ -77,6 +80,65 @@ public class WebSocketHandler {
         connections.broadcast(username, serverMessage, false);
     }
 
+    public void makeMove(Session session, String username, String commandMessage) throws IOException, DataAccessException {
+        MakeMoveCommand command = new Gson().fromJson(commandMessage, MakeMoveCommand.class);
+
+        // FOR TESTING ONLY
+        ChessMove move = command.getMove();
+        if (command.getPlayerColor() == null && (username.equals("white") || username.equals("white2"))) {
+            command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, command.getAuthToken(), command.getGameID(), move, ChessGame.TeamColor.WHITE);
+        } else if (command.getPlayerColor() == null && username.equals("black")) {
+            command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, command.getAuthToken(), command.getGameID(), move, ChessGame.TeamColor.BLACK);
+        }
+
+        GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
+        int gameID = gameData.gameID();
+        String whiteUsername = gameData.whiteUsername();
+        String blackUsername = gameData.blackUsername();
+        String gameName = gameData.gameName();
+        ChessGame game = gameData.game();
+        if (game.getLiveGame()) {
+            try {
+                if (game.getTeamTurn() != command.getPlayerColor()) {
+                    throw new DataAccessException("not your turn");
+                }
+                game.makeMove(move);
+
+                GameData newData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+                Server.gameHandler.gameService.game.updateGame(gameID, newData);
+
+                LoadGameMessage load = new LoadGameMessage(newData.game());
+                sendMessage(session.getRemote(), load);
+                connections.broadcast(username, load, false);
+            } catch (DataAccessException ex) {
+                throw new DataAccessException(ex.getMessage());
+            } catch (InvalidMoveException e) {
+                throw new DataAccessException("not a valid move");
+            }
+        } else {
+            throw new DataAccessException("game is already over");
+        }
+
+
+
+        String message = "";
+        String startPosition = convertPosition(move.getStartPosition());
+        String endPosition = convertPosition(move.getEndPosition());
+
+        if (command.getPlayerColor() != null) {
+            message = String.format("%s moved from " + startPosition + " to " + endPosition, username);
+        } else {
+            throw new DataAccessException("observers cannot make moves");
+        }
+        var serverMessage = new NotificationMessage(message);
+        connections.broadcast(username, serverMessage, false);
+
+
+        //add check stuff here
+    }
+
+
+
     public void leaveGame(Session session, String username, String commandMessage) throws IOException, DataAccessException {
         LeaveGameCommand command = new Gson().fromJson(commandMessage, LeaveGameCommand.class);
         GameData gameData = Server.gameHandler.gameService.game.getGame(command.getGameID());
@@ -86,7 +148,7 @@ public class WebSocketHandler {
         String message = String.format("%s left the game", username);
 
         // FOR TESTING ONLY
-        if (command.getPlayerColor().equals("") && username.equals("white")) {
+        if (command.getPlayerColor().equals("") && (username.equals("white") || username.equals("white2"))) {
             command = new LeaveGameCommand(UserGameCommand.CommandType.LEAVE, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.WHITE);
         } else if (command.getPlayerColor().equals("") && username.equals("black")) {
             command = new LeaveGameCommand(UserGameCommand.CommandType.LEAVE, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.BLACK);
@@ -119,7 +181,7 @@ public class WebSocketHandler {
         String message = "";
 
         // FOR TESTING ONLY
-        if (command.getPlayerColor().equals("") && username.equals("white")) {
+        if (command.getPlayerColor().equals("") && (username.equals("white") || username.equals("white2"))) {
             command = new ResignCommand(UserGameCommand.CommandType.RESIGN, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.WHITE);
         } else if (command.getPlayerColor().equals("") && username.equals("black")) {
             command = new ResignCommand(UserGameCommand.CommandType.RESIGN, command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.BLACK);
@@ -153,6 +215,36 @@ public class WebSocketHandler {
 //            remote.sendString(message);
 //        }
         remote.sendString(new Gson().toJson(message));
+    }
+
+    private static String convertPosition(ChessPosition chessPosition) {
+        return convertCol(chessPosition.getColumn()) + convertRow(chessPosition.getRow());
+    }
+
+    private static String convertCol(int colPos) {
+        String col = "";
+        if (colPos == 1) {
+            col = "a";
+        } else if (colPos == 2) {
+            col = "b";
+        } else if (colPos == 3) {
+            col = "c";
+        } else if (colPos == 4) {
+            col = "d";
+        } else if (colPos == 5) {
+            col = "e";
+        } else if (colPos == 6) {
+            col = "f";
+        } else if (colPos == 7) {
+            col = "g";
+        } else if (colPos == 8) {
+            col = "h";
+        }
+        return col;
+    }
+
+    private static String convertRow(int rowPos) {
+        return String.valueOf(rowPos);
     }
 
 //    public void saveSession(int gameID, Session session) {

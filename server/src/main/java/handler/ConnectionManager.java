@@ -24,15 +24,15 @@ public class ConnectionManager {
         gameConnector.remove(username);
     }
 
-    public void broadcast(String excludeUserName, ServerMessage message, boolean resign) throws IOException {
+    public void broadcast(String excludeUserName, ServerMessage message, boolean allPlayers) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             boolean sameGame = gameConnector.get(excludeUserName) == gameConnector.get(c.username);
-            if (c.session.isOpen() && !resign) {
+            if (c.session.isOpen() && !allPlayers) {
                 if (!c.username.equals(excludeUserName) && sameGame) {
                     c.sendMessage(new Gson().toJson(message));
                 }
-            } else if (c.session.isOpen() && resign) {
+            } else if (c.session.isOpen() && allPlayers) {
                 if (sameGame) {
                     c.sendMessage(new Gson().toJson(message));
                 }
